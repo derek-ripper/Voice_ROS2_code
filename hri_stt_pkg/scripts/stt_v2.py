@@ -44,7 +44,12 @@ class SpeechRecognizer(Node):
 
     def __init__(self):
         super().__init__('Speech_Rec')
-        self.publish_ = self.create_publisher(String, 'stt', 10)
+
+        self.declare_parameter("SR_SPEECH_ENGINE",   'google')
+        self.declare_parameter("SR_ENERGY_THRESHOLD", 1200)
+        self.declare_parameter("SR_PAUSE_THRESHOLD",  1.1)
+
+        self.publish_ = self.create_publisher(String, '/stt', 10)
         self.listen_toggle = self.create_subscription(Bool,'hearts/stt_toggle',self.listen_callback,10)
 
         self.audio_sources = [ 'mic' ]
@@ -255,14 +260,14 @@ def main(args=None):
     rclpy.init(args=args)
     my_node = SpeechRecognizer()
 
-    speech_recognition_engine = 'google'
+    speech_recognition_engine = my_node.get_parameter(
+    'SR_SPEECH_ENGINE').get_parameter_value().string_value
+    energy_threshold = my_node.get_parameter(
+    'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
+    pause_threshold = my_node.get_parameter(
+    'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
 
     dynamic_energy_threshold  = False # default is "True"
-    pause_threshold           = 1.1   # Default is 0.8 secs
-
-    energy_threshold          = 1200 # rclpy.get_param("SR_ENERGY_THRESHOLD")  # default is 300
-
-    #self.declare_parameter('speech_recognition_engine', 'google')
 
     my_node.set_speech_recognition_engine(speech_recognition_engine)
 
