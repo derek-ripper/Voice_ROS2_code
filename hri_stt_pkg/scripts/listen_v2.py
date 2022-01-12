@@ -50,7 +50,7 @@ class Listen(Node):
     #     ### self.sub3 = self.create_subscription(String, "robotsound", SoundRequest, self.callback3, 10)
     #
           # set up subscriber for returned TOPIC
-        self.sub4 = self.create_subscription(String, "/stt",  self.callback4, 10)
+        sub4 = self.create_subscription(String, "/stt",  self.callback4, 10)
     #
     #     # set up subscriber for returned TOPIC
     #     self.sub5 = self.create_subscription(String, "/hearts/tts_finished",  self.callback5,10)
@@ -83,9 +83,10 @@ class Listen(Node):
     #     node.get_logger().info(cname+":\n robotsound    -  data.SAY is: "+self.out3)
 
     def callback4(self,data):
-        print("callback #4")
-        self.out4=data.data
-        prt.result(cname +  " the answer")
+        prt.info("callback #4 Topic= /stt")
+        out4=data.data
+        prt.result(cname +  out4 + "\n")
+
         #node.get_logger().info(cname+":\n hearts/stt -     data.data is: "+self.out4)
 
     # def callback5(self,data):
@@ -105,4 +106,7 @@ def main(args=None):
     rclpy.spin(my_node)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        prt.info("***** All done in " + cname)

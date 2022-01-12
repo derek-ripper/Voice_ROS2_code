@@ -27,7 +27,7 @@ ament_python_install_package(scripts/)
 
 install(PROGRAMS
 scripts/stt_v2.py
-scripts/listen.py
+scripts/listen_v2.py
 scripts/gcp_keywords_r.py
 scripts/gcp_credentials_v2.py
 scripts/simple_pub.py
