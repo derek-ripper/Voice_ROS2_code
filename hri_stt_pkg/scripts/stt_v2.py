@@ -44,7 +44,7 @@ class SpeechRecognizer(Node):
 
     def __init__(self):
         super().__init__('Speech_Rec')
-
+        prt.debug(cname+"in init")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
         self.declare_parameter("SR_ENERGY_THRESHOLD", 1200)
         self.declare_parameter("SR_PAUSE_THRESHOLD",  1.1)
@@ -273,6 +273,7 @@ def main(args=None):
 
     prt.info(cname + "speech_recognition_engine: " + speech_recognition_engine)
     prt.info(cname + "Energy threshold         : " + str(energy_threshold))
+    prt.info(cname + "Pause threshold          : " + str(pause_threshold))
     settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/" +str(energy_threshold)+"/"+str(pause_threshold)
 
     prt.info(cname + "audio source is microphone")
@@ -320,4 +321,7 @@ def main(args=None):
     rclpy.spin(my_node)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        prt.warning(cname+" Cancelelld by user !")
