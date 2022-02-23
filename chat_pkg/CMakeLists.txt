@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(hri_tts_pkg)
+project(chat_pkg)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -20,16 +20,11 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 
-ament_python_install_package(scripts/)
+ament_python_install_package(scripts)
 
 install(PROGRAMS
-scripts/tts_V2.py
-DESTINATION lib/${PROJECT_NAME}/
-)
-
-install (DIRECTORY
-   launch
-   DESTINATION share/${PROJECT_NAME}/
+scripts/chat.py
+DESTINATION lib/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)

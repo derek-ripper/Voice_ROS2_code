@@ -98,6 +98,8 @@ class Tc(object):
     def info    (self,txt): print( Tc.fg_cyan   +Tc.bold                             + Tc.end.format("INFO   : "+txt))
     def result  (self,txt): print( Tc.fg_green  +Tc.bold                             + Tc.end.format("RESULT : "+txt))
     def todo    (self,txt): print( Tc.fg_yellow  +Tc.bold      +Tc.bg_blue+Tc.norm   + Tc.end.format("TODO   : "+txt))
+    def blank   (self):     print("\n")
+
 if __name__ == '__main__':
     import text_colours
 

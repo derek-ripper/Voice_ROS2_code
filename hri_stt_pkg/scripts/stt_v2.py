@@ -53,7 +53,7 @@ class SpeechRecognizer(Node):
         self.listen_toggle = self.create_subscription(Bool,'hearts/stt_toggle',self.listen_callback,10)
 
         self.audio_sources = [ 'mic' ]
-        self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 'google_cloud', 'houndify', 'azure' ]
+        self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 'google_cloud', 'houndify', 'bing' ]
 
         self.sp_rec = sr.Recognizer()
         self.sp_rec.operation_timeout = 10
@@ -71,7 +71,6 @@ class SpeechRecognizer(Node):
             quit()
 
     def set_speech_recognition_engine(self, speech_recognition_engine):
-        speech_recognition_engine = 'google'
         if  speech_recognition_engine == self.speech_recognition_engines[0]: # google api
             self.init_google()
             self.speech_recognition_engine = speech_recognition_engine
