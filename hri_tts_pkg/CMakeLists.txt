@@ -23,7 +23,7 @@ find_package(rclpy REQUIRED)
 ament_python_install_package(scripts/)
 
 install(PROGRAMS
-scripts/tts_V2.py
+scripts/tts_v2.py
 DESTINATION lib/${PROJECT_NAME}/
 )
 
