@@ -2,7 +2,7 @@
 ################################################################################
 #Author  : Derek Ripper
 #Created : 22 Feb 2022
-#Purpose : To listen on topic /stt and to speak 
+#Purpose : To listen on topic /stt and to speak
 
 ################################################################################
 # Origin:
@@ -27,6 +27,7 @@ import os
 # To get colour coded messages for ERROR,INFO,RESULT, etc
 import  py_utils_pkg.text_colours     as TC
 prt = TC.Tc()
+
 cname = "tts_v2-"
 
 class Sayit(Node):
@@ -40,10 +41,16 @@ class Sayit(Node):
 
     def listen_callback(self, msg):
         myobj = gTTS(text=msg.data, lang=self.language, tld=self.accent, slow=self.slow)
-        myobj.save("TheTextToSay.mp3")
+
+        myobj.save('TheTextToSay.mp3')
+
         # Playing the converted file
-        os.system("mpg321 TheTextToSay.mp3 2>null")
-        prt.debug(cname+"Speaking is complete!")
+        prt.debug(cname+'playing mp3 file now?')
+        #NB arg value for file cannot be a variable name!
+        ans = os.system("mpg321 TheTextToSay.mp3")
+        prt.debug(cname+"rtn code: "+str(ans))
+        prt.debug(cname+"Speaking is complete!!!")
+        prt.todo(cname+'Add "rm" command for mp3 file')
 
 def main(args=None):
     rclpy.init(args=args)

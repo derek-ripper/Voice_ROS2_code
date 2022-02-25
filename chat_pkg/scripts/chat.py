@@ -16,7 +16,6 @@
 import rclpy
 from rclpy.node     import Node
 from std_msgs.msg   import String
-import speech_recognition as sr # sudo pip install SpeechRecognition && sudo apt-get install python-pyaudio
 
 # import python_support_library.text_colours     as
 import  py_utils_pkg.text_colours     as TC
@@ -30,34 +29,42 @@ class Chat(Node):
 
     def __init__(self):
         super().__init__('Speech_Rec')
-        prt.debug(cname+"in chat.py")
+        prt.debug(cname+"Enter __init__ chat.py")
 
         self.listen   = self.create_subscription(String,'/stt',
                         self.listen_callback,10)
+
         self.publish_ = self.create_publisher(String, '/tts', 10)
 
-    def listen_callback(self,msg):
-        self.decode_user_request(msg.data)
+        prt.debug(cname+'Leave __init__ ')
 
-    def decode_user_request(self,txt):
-        txt=txt.upper()
-        result = txt.find("ABORT")
-        if result == -1 :
-            prt.info(cname+"Just carry on as no words foun that I know about!")
-        else:
-            prt.warning(cname +"KILL Node")
+    def listen_callback(self,msg):
+        self.answer = (msg.data)
+
+    def chatting(self):
+        prt.debug(cname+'Enter def  chatting ')
+        txt = String()
+        txt.data = 'Hi I will now ask you to speak and then I will repeat back to you'
+        self.publish_.publish(txt)
+        doitagain = True
+
+        while doitagain == True:
+            prt.debug(cname+'Eneter def  chatting doitagain loop ')
+            doitagain = False
+            txt.data = 'Speak now please'
+            self.publish_.publish(txt)
+
+        prt.debug(cname+'Leave def  chatting ')
 
 def main(args=None):
     rclpy.init(args=args)
     waffle = Chat()
+    waffle.chatting()
     rclpy.spin(waffle)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-
-
-
+    # when the garbage collector destroys the node object)s
 
 if __name__ == '__main__':
     try:
