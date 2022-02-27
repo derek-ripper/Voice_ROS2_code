@@ -31,8 +31,8 @@ def generate_launch_description():
 
         Node(
         package    ="hri_tts_pkg",
-        executable ="chat.py",
-        name       ="chat_node", #Takes priorty over node name in package code
+        executable ="tts_v2.py",
+        name       ="tts_node", #Takes priorty over node name in package code
         output     ="screen",
         emulate_tty = True),
 
