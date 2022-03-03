@@ -7,12 +7,17 @@
 #           2- Process through one of the available speech engines to transcribe
 #              to text.
 # History:
-# Original code was stt.py and written for the ERL Lisbon competition in June 2017
+# Original code was stt.py and written for ERL Lisbon competition in June 2017
 # This is the same BUT 2 fuctions have been renoved:
-#   1-To record voice on demand - ie not contunuous listening.
+#   1-To record voice on demand - ie not contunuous listening. Was neded for
+#     FBM's (functional bench marks) in ERL competions.
 #   2-To batch process a diectory of prerecorded .wav files and output results in EXCEL
 #     format to compare to the actual answers (ERL Gold Standard file)
 #     Output also in competition format for the ERL judge.
+
+# Required support is:
+#        sudo pip install SpeechRecognition   # for speech_recognition module
+#        sudo apt-get install python-pyaudio  # for mcrophone operation
 ###############################################################################
 # Updates:
 # 22 Nov 2021 Derek - Code moved to ROS2 and Python3
@@ -26,7 +31,7 @@ from rclpy.node     import Node
 from std_msgs.msg   import String, Bool
 #import pocketsphinx # In June 2017 gave up on this one!!
 
-import speech_recognition as sr # sudo pip install SpeechRecognition && sudo apt-get install python-pyaudio
+import speech_recognition as sr
 # import python_support_library.text_colours     as TC      # print text in various colours/sstyles
 import  py_utils_pkg.text_colours     as TC
 # Only used by "google cloud platform" (GCP) speech recognition
@@ -44,13 +49,13 @@ class SpeechRecognizer(Node):
 
     def __init__(self):
         super().__init__('Speech_Rec')
-        prt.debug(cname+"in init")
+
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
         self.declare_parameter("SR_ENERGY_THRESHOLD", 1200)
         self.declare_parameter("SR_PAUSE_THRESHOLD",  1.1)
 
         self.publish_ = self.create_publisher(String, '/stt', 10)
-        self.listen_toggle = self.create_subscription(Bool,'hearts/stt_toggle',self.listen_callback,10)
+        self.listen_toggle = self.create_subscription(String,'/stt_toggle',self.stt_toggle_callback,10)
 
         self.audio_sources = [ 'mic' ]
         self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 'google_cloud', 'houndify', 'bing' ]
@@ -58,9 +63,21 @@ class SpeechRecognizer(Node):
         self.sp_rec = sr.Recognizer()
         self.sp_rec.operation_timeout = 10
 
-    def listen_callback(self, in_data):
-        self.run = in_data.data
-        prt.info(cname + "is listening = "  +str(self.run))
+    def stt_toggle_callback(self, in_data):
+        prt.debug(cname+"enter toggle_callback ##########################")
+        switch = in_data.data
+        switch = switch.upper()
+        if   switch == "ON":
+            prt.info(cname + "is listening.  ############################")
+            self.publish_ = self.create_publisher(String, '/stt', 10)
+        elif switch == "OFF":
+            prt.info(cname + "is NOT listening.###########################")
+            del self.publish_
+        else:
+            prt.error(cname+'stt_toggle_callback - illeagal arg: '+str(switch))
+
+        return
+
 
     def set_audio_source(self, audio_source):
         self.audio_source = audio_source
@@ -98,23 +115,27 @@ class SpeechRecognizer(Node):
             self.speech_recognition_engine = speech_recognition_engine
 
         else:
-            prt.error("Unsupported Speech Engine: " + speech_recognition_engine+"\n\nUse CTRL-C to kill current ROS node")
+            prt.error("Unsupported Speech Engine: " + speech_recognition_engine+
+            "\n\nUse CTRL-C to kill current ROS node")
             sys.exit()
 
     def msg01(self,se):
-        prt.error("The " + se + " speech engne has not been implemented yet!\n\nUse CTRL-C to kill current ROS node")
+        prt.error("The " + se +
+        " speech engne has not been implemented yet!"+
+        "\n\nUse CTRL-C to kill current ROS node")
         sys.exit()
 
     def init_mic(self):
         self.m = sr.Microphone(device_index = None, sample_rate = 41000)
 
     def init_google(self):
-        # may need to define google API credentials when I can work out how to get them!
+        # may need to define google API credentials when I can work out how to
+        # get them!
         pass
         return
 
     def init_ibm():
-        #  these are out of date - initial 30 day intial period expired in 2017!!
+        #  these are out of date -initial 30 day intial period expired in 2017!!
         self.IBM_USERNAME = "c2db0a18-e3b6-4a21-9ecf-8afd2edeeb30"
         self.IBM_PASSWORD = "uAzeboVUvhuP"
 
@@ -170,7 +191,8 @@ class SpeechRecognizer(Node):
         return self.sp_rec.recognize_google(audio, language="en-GB")#,key='AIzaSyAFaKnn1cMIrjGYOOdocHMDnVjInbOF_yo')
 
     def recognize_ibm(self, audio):
-        return self.sp_rec.recognize_ibm(audio, username=self.IBM_USERNAME,  password=self.IBM_PASSWORD)
+        return self.sp_rec.recognize_ibm(audio, username=self.IBM_USERNAME,
+        password=self.IBM_PASSWORD)
 
     def recognize_sphinx(self, audio):
         return self.sp_rec.recognize_sphinx(audio)
@@ -185,10 +207,12 @@ class SpeechRecognizer(Node):
             preferred_phrases = None) # self.gcp_kwords)
 
     def recognize_houndify(self, audio):
-        return self.sp_rec.recognize_houndify(audio, client_id=self.h_client_id, client_key=self.h_client_key)
+        return self.sp_rec.recognize_houndify(audio, client_id=self.h_client_id,
+         client_key=self.h_client_key)
 
     def recognize_azure(self, audio):
-        return self.sp_rec.recognize_azure(audio, key=self.azure_key, location='westeurope', language='en-GB' )
+        return self.sp_rec.recognize_azure(audio, key=self.azure_key,
+        location='westeurope', language='en-GB' )
 
 
     def recognize(self, audio):
@@ -273,7 +297,8 @@ def main(args=None):
     prt.info(cname + "speech_recognition_engine: " + speech_recognition_engine)
     prt.info(cname + "Energy threshold         : " + str(energy_threshold))
     prt.info(cname + "Pause threshold          : " + str(pause_threshold))
-    settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/" +str(energy_threshold)+"/"+str(pause_threshold)
+    settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/" +
+               str(energy_threshold)+"/"+str(pause_threshold)
 
     prt.info(cname + "audio source is microphone")
     my_node.set_audio_source("mic")
@@ -290,7 +315,8 @@ def main(args=None):
         while my_node.run == False:
            rclpy.sleep = (0.1)
 
-        audio = my_node.get_audio_from_mic(energy_threshold, pause_threshold, dynamic_energy_threshold)
+        audio = my_node.get_audio_from_mic(energy_threshold, pause_threshold,
+                dynamic_energy_threshold)
 
         try:
             time_begin = my_node.get_clock().now()
@@ -302,7 +328,8 @@ def main(args=None):
             time_end = my_node.get_clock().now()
             elapsed_time= time_end - time_begin
 
-            prt.info(cname + "Duration for Speech Recogniion process = " + str(elapsed_time) )
+            prt.info(cname + "Duration for Speech Recogniion process = " +
+                              str(elapsed_time) )
             prt.info(cname + "SPEECH HEARD by ROBOT.")
             prt.result(cname + "" + msg.data + "\n")
 

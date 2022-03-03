@@ -1,25 +1,25 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ###############################################################################
 # Filename: chat.py
 # Created : 23 Feb 2022
 # Author  : Derek Ripper
-# Purpose : 1- To test teh speech modules  stt aand tts.
-#           2- also to sort out the controlling of the rbot NOT repeating what
-#             it has just said!
+# Purpose : 1- To test the speech modules  stt aand tts.
+#           2- also to sort out the controlling of the robot NOT repeating what
+#             it has just said!!
 #
-# History:
-#       None
 ###############################################################################
 # Updates:
+# ??/???/???? by ????? -
 #
 ################################################################################
 import rclpy
 from rclpy.node     import Node
 from std_msgs.msg   import String
 
-# import python_support_library.text_colours     as
+# import python general utils
 import  py_utils_pkg.text_colours     as TC
-# simple routine to use instead of print() - to get colour coded messages for ERROR,INFO,RESULT, etc
+# simple routine to use instead of print() - to get colour coded messages for
+# ERROR,INFO,RESULT, messages, etc
 prt = TC.Tc()
 
 #code name - to be used in any warning/error msgs.
@@ -28,38 +28,50 @@ cname = "chat- "
 class Chat(Node):
 
     def __init__(self):
-        super().__init__('Speech_Rec')
-        prt.debug(cname+"Enter __init__ chat.py")
+        super().__init__('waffle')
+        self.pub_text_ = self.create_publisher(String, '/stt', 10)
+        self.pub_toggle= self.create_publisher(String, '/stt_toggle', 10)
 
-        self.listen   = self.create_subscription(String,'/stt',
-                        self.listen_callback,10)
+    # def set_stt_switch(self,on_OR_off):
+    #     on_OR_off = on_OR_off.upper()
+    #
+    #     switch = String()
+    #     switch.data = on_OR_off
+    #
+    #     self.pub_toggle.publish(switch)
+    #
+    #     return
 
-        self.publish_ = self.create_publisher(String, '/tts', 10)
-
-        prt.debug(cname+'Leave __init__ ')
-
-    def listen_callback(self,msg):
-        self.answer = (msg.data)
-
-    def chatting(self):
+    def chatting(self,text2say):
         prt.debug(cname+'Enter def  chatting ')
-        txt = String()
-        txt.data = 'Hi I will now ask you to speak and then I will repeat back to you'
-        self.publish_.publish(txt)
-        doitagain = True
+        msg = String()
+        msg.data = text2say
+        prt.debug(cname+'msg.data is: '  + msg.data)
+        #self.set_stt_switch ("OFF")
 
-        while doitagain == True:
-            prt.debug(cname+'Eneter def  chatting doitagain loop ')
-            doitagain = False
-            txt.data = 'Speak now please'
-            self.publish_.publish(txt)
+        try:
+            self.pub_text_.publish(msg)
 
+            #self.set_stt_switch ("ON")
+        except:
+            prt.error(cname+"pubish call to stt went wrong!")
+        # doitagain = False
+        # while doitagain == True:
+        #     prt.debug(cname+'Eneter def  chatting doitagain loop ')
+        #     #doitagain = False
+        #     msg.data = 'Speak now please'
+        #     self.pub_text_.publish(msg)
+
+        prt.debug(cname+"2nd pub attempt")
+        self.pub_text_.publish(msg)
         prt.debug(cname+'Leave def  chatting ')
 
 def main(args=None):
+    prt.debug(cname+"Enter main")
     rclpy.init(args=args)
     waffle = Chat()
-    waffle.chatting()
+    text2say = 'now it should work'
+    waffle.chatting(text2say)
     rclpy.spin(waffle)
 
     # Destroy the node explicitly

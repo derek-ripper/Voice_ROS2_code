@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 ################################################################################
-#Author  : Derek Ripper
-#Created : 22 Feb 2022
-#Purpose : To listen on topic /stt and to speak
-
+# Filename: tts_v2.py
+# Author  : Derek Ripper
+# Created : 22 Feb 2022
+# Purpose : To listen for text string on topic "/stt" and to say it
+#
 ################################################################################
-# Origin:
+# Reference:
 #   https://www.geeksforgeeks.org/convert-text-speech-python/
 #
 # Required support is:
-#   pip install     gTTS            # google TTS API
+#   pip install     gTTS            # google TTS API - NO registration/Licence
+#                                                      needed.
 #   sudo apt-get update -y
-#   sudo apt-get -y install mpg321  # command line mpeg plater
+#   sudo apt-get -y install mpg321  # command line mpeg player
 #
 ################################################################################
-# import the required google module for text
-# to speech conversion
+# Updates:
+# ??/???/???? by ????? -
+#
+################################################################################
+
+# import the required google module for "text to speech" conversion
 from gtts import gTTS
 
 import rclpy
 from   rclpy.node   import Node
 from   std_msgs.msg import String
+
 import os
 
 # simple routine to use instead of print() -
@@ -36,18 +43,23 @@ class Sayit(Node):
         self.language = 'en'
         self.accent   = 'co.uk'
         self.slow     = 'False'
-
         self.listen   = self.create_subscription(String,'/stt',self.listen_callback,10)
+        self.listen   # to avoid unused variable message
+        prt.debug(cname+"Leave init")
 
     def listen_callback(self, msg):
-        myobj = gTTS(text=msg.data, lang=self.language, tld=self.accent, slow=self.slow)
+        prt.debug(cname+" Enter listen_callback")
+        prt.debug(cname+"TOPIC: /stt contains: "+msg.data)
 
+        txt = msg.data
+        prt.debug(cname+"msg.data is: "+txt)
+        myobj = gTTS(text=txt, lang=self.language, tld=self.accent, slow=self.slow)
         myobj.save('TheTextToSay.mp3')
 
         # Playing the converted file
         prt.debug(cname+'playing mp3 file now?')
         #NB arg value for file cannot be a variable name!
-        ans = os.system("mpg321 TheTextToSay.mp3")
+        ans = os.system("mpg321  TheTextToSay.mp3")
         prt.debug(cname+"rtn code: "+str(ans))
         prt.debug(cname+"Speaking is complete!!!")
         prt.todo(cname+'Add "rm" command for mp3 file')
@@ -55,13 +67,13 @@ class Sayit(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    mynode  = Sayit()
-    rclpy.spin(mynode)
+    tts_node  = Sayit()
+    rclpy.spin(tts_node)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    mynode.destroy_node()
+    tts_node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
