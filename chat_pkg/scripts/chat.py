@@ -31,7 +31,7 @@ class Chat(Node):
         super().__init__('my_node')
         self.pub_text_ = self.create_publisher(String, '/stt', 10)
         self.pub_toggle= self.create_publisher(String, '/stt_toggle', 10)
-        self.timer1_=self.create_timer(3600, self.speakout)
+        #self.timer1_=self.create_timer(2, self.speakout)
 
     # def set_stt_switch(self,on_OR_off):
     #     on_OR_off = on_OR_off.upper()
@@ -44,13 +44,12 @@ class Chat(Node):
     #     return
 
 
-    def speakout(self):
-            text2speak = "Does this work"
-            prt.debug(cname+'ENTER def  speakout ')
-            msg = String()
-            msg.data = text2speak
-            self.pub_text_.publish(msg)
-            prt.debug(cname+'LEAVE def  speakout ')
+    def speakout(self,text2speak):
+        prt.debug(cname+'ENTER def  speakout ')
+        msg = String()
+        msg.data = text2speak
+        self.pub_text_.publish(msg)
+        prt.debug(cname+'LEAVE def  speakout ')
 
     def chatting(self,text2say):
         prt.debug(cname+'Enter def  chatting ')
@@ -81,7 +80,12 @@ def main(args=None):
     prt.debug(cname+"Enter main")
 
     waffle = Chat()
+
+    text2speak = "Last hope now"
+
+    waffle.speakout(text2speak)
     rclpy.spin(waffle)
+
     rclpy.shutdown()
 
 

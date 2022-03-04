@@ -28,17 +28,19 @@ def generate_launch_description():
         # {"SR_PAUSE_THRESHOLD"  : 1.01    },
         # ]),
 
-        Node(
-        package    ="hri_tts_pkg",
-        executable ="tts_v2.py",
-        name       ="tts_node", #Takes priorty over node name in package code
-        output     ="screen",
-        emulate_tty = True),
+
 
         Node(
         package    ="chat_pkg",
         executable ="chat.py",
         name       ="chat_node", #Takes priorty over node name in package code
+        output     ="screen",
+        emulate_tty = True),
+
+        Node(
+        package    ="hri_tts_pkg",
+        executable ="tts_v2.py",
+        name       ="tts_node", #Takes priorty over node name in package code
         output     ="screen",
         emulate_tty = True),
 

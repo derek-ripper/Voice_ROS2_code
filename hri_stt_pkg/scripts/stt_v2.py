@@ -298,7 +298,7 @@ def main(args=None):
     prt.info(cname + "speech_recognition_engine: " + speech_recognition_engine)
     prt.info(cname + "Energy threshold         : " + str(energy_threshold))
     prt.info(cname + "Pause threshold          : " + str(pause_threshold))
-    settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/" +
+    settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/"+ \
                str(energy_threshold)+"/"+str(pause_threshold)
 
     prt.info(cname + "audio source is microphone")

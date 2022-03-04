@@ -43,7 +43,7 @@ class Sayit(Node):
         self.language = 'en'
         self.accent   = 'co.uk'
         self.slow     = 'False'
-        
+
         self.listen   = self.create_subscription(String,'/stt',self.listen_callback,10)
         # self.listen   # to avoid unused variable message
         prt.debug(cname+"Leave init")
@@ -60,7 +60,7 @@ class Sayit(Node):
         # Playing the converted file
         prt.debug(cname+'playing mp3 file now?')
         #NB arg value for file cannot be a variable name!
-        ans = os.system("mpg321  TheTextToSay.mp3")
+        ans = os.system("mpg123  TheTextToSay.mp3")
         prt.debug(cname+"rtn code: "+str(ans))
         prt.debug(cname+"Speaking is complete!!!")
         prt.todo(cname+'Add "rm" command for mp3 file')
