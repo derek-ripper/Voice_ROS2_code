@@ -13,8 +13,8 @@
 #
 ################################################################################
 import rclpy
-from rclpy.node     import Node
-from std_msgs.msg   import String
+from   rclpy.node    import Node
+from   std_msgs.msg  import String
 
 # import python general utils
 import  py_utils_pkg.text_colours     as TC
@@ -22,15 +22,16 @@ import  py_utils_pkg.text_colours     as TC
 # ERROR,INFO,RESULT, messages, etc
 prt = TC.Tc()
 
-#code name - to be used in any warning/error msgs.
+#code name - to be used in  warning/error msgs.
 cname = "chat- "
 
 class Chat(Node):
 
     def __init__(self):
-        super().__init__('waffle')
+        super().__init__('my_node')
         self.pub_text_ = self.create_publisher(String, '/stt', 10)
         self.pub_toggle= self.create_publisher(String, '/stt_toggle', 10)
+        self.timer1_=self.create_timer(3600, self.speakout)
 
     # def set_stt_switch(self,on_OR_off):
     #     on_OR_off = on_OR_off.upper()
@@ -41,6 +42,15 @@ class Chat(Node):
     #     self.pub_toggle.publish(switch)
     #
     #     return
+
+
+    def speakout(self):
+            text2speak = "Does this work"
+            prt.debug(cname+'ENTER def  speakout ')
+            msg = String()
+            msg.data = text2speak
+            self.pub_text_.publish(msg)
+            prt.debug(cname+'LEAVE def  speakout ')
 
     def chatting(self,text2say):
         prt.debug(cname+'Enter def  chatting ')
@@ -67,12 +77,16 @@ class Chat(Node):
         prt.debug(cname+'Leave def  chatting ')
 
 def main(args=None):
-    prt.debug(cname+"Enter main")
     rclpy.init(args=args)
+    prt.debug(cname+"Enter main")
+
     waffle = Chat()
-    text2say = 'now it should work'
-    waffle.chatting(text2say)
     rclpy.spin(waffle)
+    rclpy.shutdown()
+
+
+
+
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
@@ -82,7 +96,7 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        waffle.destroy_node()
+
         rclpy.shutdown()
 
         prt.blank()

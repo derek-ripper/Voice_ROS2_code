@@ -16,6 +16,7 @@
 #     Output also in competition format for the ERL judge.
 
 # Required support is:
+#
 #        sudo pip install SpeechRecognition   # for speech_recognition module
 #        sudo apt-get install python-pyaudio  # for mcrophone operation
 ###############################################################################

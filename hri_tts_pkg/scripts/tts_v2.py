@@ -43,8 +43,9 @@ class Sayit(Node):
         self.language = 'en'
         self.accent   = 'co.uk'
         self.slow     = 'False'
+        
         self.listen   = self.create_subscription(String,'/stt',self.listen_callback,10)
-        self.listen   # to avoid unused variable message
+        # self.listen   # to avoid unused variable message
         prt.debug(cname+"Leave init")
 
     def listen_callback(self, msg):
