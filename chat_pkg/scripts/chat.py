@@ -82,9 +82,11 @@ def main(args=None):
     waffle = Chat()
 
     text2speak = "Last hope now"
-
+    prt.debug(cname+'Prior to speakout')
     waffle.speakout(text2speak)
+    prt.debug(cname+'After    speakout')
     rclpy.spin(waffle)
+    #waffle.speakout(text2speak)
 
     rclpy.shutdown()
 
