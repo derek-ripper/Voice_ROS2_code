@@ -29,51 +29,53 @@ class Chat(Node):
 
     def __init__(self):
         super().__init__('my_node')
-        self.pub_text_ = self.create_publisher(String, '/stt', 10)
-        self.pub_toggle= self.create_publisher(String, '/stt_toggle', 10)
+        self.subscription = self.create_subscription(
+            String,
+            'stt',
+            self.listener_callback,
+            10)
+        self.pub_text       = self.create_publisher(String, '/tts', 10)
+        self.pub_stt_switch = self.create_publisher(String, '/stt_switch', 10)
         #self.timer1_=self.create_timer(2, self.speakout)
 
-    # def set_stt_switch(self,on_OR_off):
-    #     on_OR_off = on_OR_off.upper()
-    #
-    #     switch = String()
-    #     switch.data = on_OR_off
-    #
-    #     self.pub_toggle.publish(switch)
-    #
-    #     return
-
+    def listener_callback(self, msg):
+        prt.debug(cname + "In subscriber callback")
+        self.get_logger().info('I heard: "%s"' % msg.data)
+        self.set_stt_switch('OFF')
+        self.speakout(msg.data)
+        self.set_stt_switch('ON')
+        return
 
     def speakout(self,text2speak):
         prt.debug(cname+'ENTER def  speakout ')
         msg = String()
         msg.data = text2speak
-        self.pub_text_.publish(msg)
+        self.pub_text.publish(msg)
         prt.debug(cname+'LEAVE def  speakout ')
 
-    def chatting(self,text2say):
-        prt.debug(cname+'Enter def  chatting ')
-        msg = String()
-        msg.data = text2say
-        prt.debug(cname+'msg.data is: '  + msg.data)
-        #self.set_stt_switch ("OFF")
-
-        try:
-            self.pub_text_.publish(msg)
-
-            #self.set_stt_switch ("ON")
-        except:
-            prt.error(cname+"pubish call to stt went wrong!")
-        # doitagain = False
-        # while doitagain == True:
-        #     prt.debug(cname+'Eneter def  chatting doitagain loop ')
-        #     #doitagain = False
-        #     msg.data = 'Speak now please'
-        #     self.pub_text_.publish(msg)
-
-        prt.debug(cname+"2nd pub attempt")
-        self.pub_text_.publish(msg)
-        prt.debug(cname+'Leave def  chatting ')
+    # def chatting(self,text2say):
+    #     prt.debug(cname+'Enter def  chatting ')
+    #     msg = String()
+    #     msg.data = text2say
+    #     prt.debug(cname+'msg.data is: '  + msg.data)
+    #     #self.set_stt_switch ("OFF")
+    #
+    #     try:
+    #         self.pub_text_.publish(msg)
+    #
+    #         #self.set_stt_switch ("ON")
+    #     except:
+    #         prt.error(cname+"pubish call to stt went wrong!")
+    #     # doitagain = False
+    #     # while doitagain == True:
+    #     #     prt.debug(cname+'Eneter def  chatting doitagain loop ')
+    #     #     #doitagain = False
+    #     #     msg.data = 'Speak now please'
+    #     #     self.pub_text_.publish(msg)
+    #
+    #     prt.debug(cname+"2nd pub attempt")
+    #     self.pub_text_.publish(msg)
+    #     prt.debug(cname+'Leave def  chatting ')
 
 def main(args=None):
     rclpy.init(args=args)
@@ -86,7 +88,7 @@ def main(args=None):
     waffle.speakout(text2speak)
     prt.debug(cname+'After    speakout')
     rclpy.spin(waffle)
-    #waffle.speakout(text2speak)
+    waffle.speakout(text2speak)
 
     rclpy.shutdown()
 

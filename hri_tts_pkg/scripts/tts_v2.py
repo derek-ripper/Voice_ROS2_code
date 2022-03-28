@@ -3,7 +3,7 @@
 # Filename: tts_v2.py
 # Author  : Derek Ripper
 # Created : 22 Feb 2022
-# Purpose : To listen for text string on topic "/stt" and to say it
+# Purpose : To listen for text string on topic "/tts" and to say it
 #
 ################################################################################
 # Reference:
@@ -44,13 +44,23 @@ class Sayit(Node):
         self.accent   = 'co.uk'
         self.slow     = 'False'
 
-        self.listen   = self.create_subscription(String,'/stt',self.listen_callback,10)
+        self.listen   = self.create_subscription(String,'/tts',self.listen_callback,10)
+        self.pub_stt_switch = self.create_publisher(String, '/stt_switch', 10)
         # self.listen   # to avoid unused variable message
-        prt.debug(cname+"Leave init")
+        prt.debug(cname+"TTS - Leave init")
+
+    def set_stt_switch(self,on_OR_off):
+        on_OR_off = on_OR_off.upper()
+
+        switch = String()
+        switch.data = on_OR_off
+
+        self.pub_stt_switch.publish(switch)
+        return
 
     def listen_callback(self, msg):
         prt.debug(cname+" Enter listen_callback")
-        prt.debug(cname+"TOPIC: /stt contains: "+msg.data)
+        prt.debug(cname+"TOPIC: /tts contains: "+msg.data)
 
         txt = msg.data
         prt.debug(cname+"msg.data is: "+txt)
@@ -60,7 +70,11 @@ class Sayit(Node):
         # Playing the converted file
         prt.debug(cname+'playing mp3 file now?')
         #NB arg value for file cannot be a variable name!
+
+        self.set_stt_switch("OFF")
         ans = os.system("mpg123  TheTextToSay.mp3")
+        self.set_stt_switch("ON")
+
         prt.debug(cname+"rtn code: "+str(ans))
         prt.debug(cname+"Speaking is complete!!!")
         prt.todo(cname+'Add "rm" command for mp3 file')

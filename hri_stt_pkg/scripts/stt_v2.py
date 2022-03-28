@@ -55,8 +55,8 @@ class SpeechRecognizer(Node):
         self.declare_parameter("SR_ENERGY_THRESHOLD", 1200)
         self.declare_parameter("SR_PAUSE_THRESHOLD",  1.1)
 
-        self.publish_ = self.create_publisher(String, '/stt', 10)
-        self.listen_toggle = self.create_subscription(String,'/stt_toggle',self.stt_toggle_callback,10)
+        self.publish_ = self.create_publisher(String, '/tts', 10)
+        self.listen_toggle = self.create_subscription(String,'/stt_switch',self.stt_switch_callback,10)
 
         self.audio_sources = [ 'mic' ]
         self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 'google_cloud', 'houndify', 'bing' ]
@@ -64,18 +64,22 @@ class SpeechRecognizer(Node):
         self.sp_rec = sr.Recognizer()
         self.sp_rec.operation_timeout = 10
 
-    def stt_toggle_callback(self, in_data):
-        prt.debug(cname+"enter toggle_callback ##########################")
-        switch = in_data.data
+    def stt_switch_callback(self, msg):
+        prt.debug(cname+"enter stt_switch_callback ##########################")
+
+        switch = msg.data
         switch = switch.upper()
+        prt.debug(cname+"arg = "+swiitch)
         if   switch == "ON":
             prt.info(cname + "is listening.  ############################")
             self.publish_ = self.create_publisher(String, '/stt', 10)
+
         elif switch == "OFF":
             prt.info(cname + "is NOT listening.###########################")
             del self.publish_
+
         else:
-            prt.error(cname+'stt_toggle_callback - illeagal arg: '+str(switch))
+            prt.error(cname+'stt_switch_callback - illeagal arg: '+str(switch))
 
         return
 
@@ -305,7 +309,7 @@ def main(args=None):
     my_node.set_audio_source("mic")
     rate = my_node.create_rate(1)
 
-    # this class variable is updated by stt_toggle from the generic controller
+    # this class variable is updated by stt_switch
     prt.todo("Remove forced trigger for the RUN variable.")
     my_node.run = True
 
