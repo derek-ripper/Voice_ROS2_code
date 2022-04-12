@@ -50,12 +50,12 @@ class SpeechRecognizer(Node):
 
     def __init__(self):
         super().__init__('Speech_Rec')
-
+        prt.info(cname+" init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
         self.declare_parameter("SR_ENERGY_THRESHOLD", 1200)
         self.declare_parameter("SR_PAUSE_THRESHOLD",  1.1)
 
-        self.publish_ = self.create_publisher(String, '/tts', 10)
+        self.publish_ = self.create_publisher(String, '/stt', 10)
         self.listen_toggle = self.create_subscription(String,'/stt_switch',self.stt_switch_callback,10)
 
         self.audio_sources = [ 'mic' ]
@@ -65,21 +65,21 @@ class SpeechRecognizer(Node):
         self.sp_rec.operation_timeout = 10
 
     def stt_switch_callback(self, msg):
-        prt.debug(cname+"enter stt_switch_callback ##########################")
+        prt.debug(cname+"========== enter stt_switch_callback ##########################")
 
         switch = msg.data
         switch = switch.upper()
         prt.debug(cname+"arg = "+swiitch)
-        if   switch == "ON":
-            prt.info(cname + "is listening.  ############################")
+        if   switch == "LIVE":
+            prt.info(cname + "========== is listening.  ############################")
             self.publish_ = self.create_publisher(String, '/stt', 10)
 
-        elif switch == "OFF":
-            prt.info(cname + "is NOT listening.###########################")
+        elif switch == "KILL":
+            prt.info(cname + "========== is NOT listening.###########################")
             del self.publish_
 
         else:
-            prt.error(cname+'stt_switch_callback - illeagal arg: '+str(switch))
+            prt.error(cname+'stt_switch_callback - Invalid arg: '+str(switch))
 
         return
 
@@ -286,7 +286,10 @@ class SpeechRecognizer(Node):
 #
 def main(args=None):
     rclpy.init(args=args)
+    prt.info(cname + "********************** in main")
+
     my_node = SpeechRecognizer()
+
 
     speech_recognition_engine = my_node.get_parameter(
     'SR_SPEECH_ENGINE').get_parameter_value().string_value
@@ -347,9 +350,10 @@ def main(args=None):
         #    my_node.publish_.publish(text.encode('utf-8'))
             my_node.publish_.publish(msg)
 
+    rclpy.spin(my_node)
+
     ### self.create_subscription.sleep()
 
-    rclpy.spin(my_node)
 
 if __name__ == '__main__':
     try:

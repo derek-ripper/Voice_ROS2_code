@@ -30,26 +30,26 @@ class Chat(Node):
     def __init__(self):
         super().__init__('my_node')
         self.subscription = self.create_subscription(
-            String,
-            'stt',
-            self.listener_callback,
-            10)
-        self.pub_text       = self.create_publisher(String, '/tts', 10)
-        self.pub_stt_switch = self.create_publisher(String, '/stt_switch', 10)
-        #self.timer1_=self.create_timer(2, self.speakout)
+            String, '/stt', self.listener_callback,  10)
+
+        self.pub_text       = self.create_publisher(
+            String, '/tts',        10)
+        # self.pub_stt_switch = self.create_publisher(
+        #     String, '/stt_switch', 10)
+        # #self.timer1_=self.create_timer(2, self.speakout)
 
     def listener_callback(self, msg):
-        prt.debug(cname + "In subscriber callback")
+        prt.debug(cname + "In listener subscriber callback")
         self.get_logger().info('I heard: "%s"' % msg.data)
-        self.set_stt_switch('OFF')
+        #self.set_stt_switch('OFF')
         self.speakout(msg.data)
-        self.set_stt_switch('ON')
+        #self.set_stt_switch('ON')
         return
 
     def speakout(self,text2speak):
-        prt.debug(cname+'ENTER def  speakout ')
-        msg = String()
-        msg.data = text2speak
+        prt.debug(cname+'ENTER def speakout ')
+        msg      = String()
+        msg.data ="You said "+ text2speak
         self.pub_text.publish(msg)
         prt.debug(cname+'LEAVE def  speakout ')
 
@@ -79,16 +79,11 @@ class Chat(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    prt.debug(cname+"Enter main")
+    prt.debug(cname+"Enter def main")
 
     waffle = Chat()
-
-    text2speak = "Last hope now"
-    prt.debug(cname+'Prior to speakout')
-    waffle.speakout(text2speak)
-    prt.debug(cname+'After    speakout')
     rclpy.spin(waffle)
-    waffle.speakout(text2speak)
+
 
     rclpy.shutdown()
 

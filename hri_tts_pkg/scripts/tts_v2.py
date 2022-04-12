@@ -35,7 +35,7 @@ import os
 import  py_utils_pkg.text_colours     as TC
 prt = TC.Tc()
 
-cname = "tts_v2-"
+cname = " tts_v2-"
 
 class Sayit(Node):
     def __init__(self):
@@ -44,19 +44,13 @@ class Sayit(Node):
         self.accent   = 'co.uk'
         self.slow     = 'False'
 
-        self.listen   = self.create_subscription(String,'/tts',self.listen_callback,10)
-        self.pub_stt_switch = self.create_publisher(String, '/stt_switch', 10)
+        self.listen         = self.create_subscription(
+            String,'/tts',self.listen_callback,10)
+
+        self.pub_stt_switch = self.create_publisher(
+            String, '/stt_switch', 10)
         # self.listen   # to avoid unused variable message
         prt.debug(cname+"TTS - Leave init")
-
-    def set_stt_switch(self,on_OR_off):
-        on_OR_off = on_OR_off.upper()
-
-        switch = String()
-        switch.data = on_OR_off
-
-        self.pub_stt_switch.publish(switch)
-        return
 
     def listen_callback(self, msg):
         prt.debug(cname+" Enter listen_callback")
@@ -71,25 +65,30 @@ class Sayit(Node):
         prt.debug(cname+'playing mp3 file now?')
         #NB arg value for file cannot be a variable name!
 
-        self.set_stt_switch("OFF")
+        self.set_stt_switch("kill")
         ans = os.system("mpg123  TheTextToSay.mp3")
-        self.set_stt_switch("ON")
+        self.set_stt_switch("live")
 
         prt.debug(cname+"rtn code: "+str(ans))
         prt.debug(cname+"Speaking is complete!!!")
         prt.todo(cname+'Add "rm" command for mp3 file')
 
+    def set_stt_switch(self,on_OR_off ):
+        arg = String()
+        arg.data = on_OR_off
+        self.pub_stt_switch.publish(arg)
+
 def main(args=None):
     rclpy.init(args=args)
-
+    prt.info(cname + "*********************** in main")
     tts_node  = Sayit()
     rclpy.spin(tts_node)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    tts_node.destroy_node()
-    rclpy.shutdown()
+    #tts_node.destroy_node()
+    #rclpy.shutdown()
 
 if __name__ == '__main__':
     try:
