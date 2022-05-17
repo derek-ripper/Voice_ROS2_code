@@ -49,11 +49,11 @@ cname = " stt_v2: "
 class SpeechRecognizer(Node):
 
     def __init__(self):
-        super().__init__('Speech_Rec')
+        super().__init__('SpeechRecognizer')
         prt.info(cname+" init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
-        self.declare_parameter("SR_ENERGY_THRESHOLD", 1200)
-        self.declare_parameter("SR_PAUSE_THRESHOLD",  1.1)
+        self.declare_parameter("SR_ENERGY_THRESHOLD", 1201)
+        self.declare_parameter("SR_PAUSE_THRESHOLD",  1.00)
 
         self.publish_ = self.create_publisher(String, '/stt', 10)
         self.listen_toggle = self.create_subscription(String,'/stt_switch',self.stt_switch_callback,10)
@@ -63,21 +63,70 @@ class SpeechRecognizer(Node):
 
         self.sp_rec = sr.Recognizer()
         self.sp_rec.operation_timeout = 10
+        self.speech_recognition_engine = self.get_parameter(
+            'SR_SPEECH_ENGINE').get_parameter_value().string_value
+        self.energy_threshold = self.get_parameter(
+            'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
+        self.pause_threshold = self.get_parameter(
+            'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
+        self.dynamic_energy_threshold  = False # default is "True"
+
+        self.set_speech_recognition_engine(self.speech_recognition_engine)
+
+
+        prt.info(cname + "speech_recognition_engine: " + self.speech_recognition_engine)
+        prt.info(cname + "Energy threshold         : " + str(self.energy_threshold))
+        prt.info(cname + "Pause threshold          : " + str(self.pause_threshold))
+        settings =  "SR/ET/PT: " + self.speech_recognition_engine + "/"+ \
+               str(self.energy_threshold)+"/"+str(self.pause_threshold)
+
+        prt.info(cname + "audio source is microphone")
+        self.set_audio_source("mic")
+    #    rate = self.create_rate(10)
+        while rclpy.ok():
+            self.jfdi()
+
+    def jfdi(self):
+
+
+
+
+            audio = self.get_audio_from_mic(self.energy_threshold, self.pause_threshold,
+                    self.dynamic_energy_threshold)
+
+            try:
+                msg = String()
+                msg.data  = self.recognize(audio)
+
+                prt.info(cname + "SPEECH HEARD by ROBOT.")
+                prt.result(cname + "" + msg.data + "\n")
+
+            except Exception as exc:
+                prt.error(cname + "Exception from speech_recogniser")
+                prt.error(str(exc))
+
+            if not msg.data is None:
+            #    text = text.strip()
+            #    my_node.publish_.publish(text.encode('utf-8'))
+                self.publish_.publish(msg)
+
 
     def stt_switch_callback(self, msg):
         prt.debug(cname+"========== enter stt_switch_callback ##########################")
 
         switch = msg.data
         switch = switch.upper()
-        prt.debug(cname+"arg = "+swiitch)
+        prt.debug(cname+"arg = "+switch)
         if   switch == "LIVE":
             prt.info(cname + "========== is listening.  ############################")
             self.publish_ = self.create_publisher(String, '/stt', 10)
 
         elif switch == "KILL":
-            prt.info(cname + "========== is NOT listening.###########################")
-            del self.publish_
-
+            try:
+                prt.info(cname + "========== is NOT listening.###########################")
+                del self.publish_
+            except:
+                prt.warning(cname + "========== NO publish object to delete!")
         else:
             prt.error(cname+'stt_switch_callback - Invalid arg: '+str(switch))
 
@@ -277,6 +326,69 @@ class SpeechRecognizer(Node):
 
             return self.sp_rec.listen(source)
 
+    # def jfdi(self):
+    #
+    #
+    #     speech_recognition_engine = my_node.get_parameter(
+    #     'SR_SPEECH_ENGINE').get_parameter_value().string_value
+    #     energy_threshold = my_node.get_parameter(
+    #     'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
+    #     pause_threshold = my_node.get_parameter(
+    #     'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
+    #
+    #     dynamic_energy_threshold  = False # default is "True"
+    #
+    #     my_node.set_speech_recognition_engine(speech_recognition_engine)
+    #
+    #     prt.info(cname + "speech_recognition_engine: " + speech_recognition_engine)
+    #     prt.info(cname + "Energy threshold         : " + str(energy_threshold))
+    #     prt.info(cname + "Pause threshold          : " + str(pause_threshold))
+    #     settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/"+ \
+    #                str(energy_threshold)+"/"+str(pause_threshold)
+    #
+    #     prt.info(cname + "audio source is microphone")
+    #     my_node.set_audio_source("mic")
+    #     rate = my_node.create_rate(1)
+    #
+    #     # this class variable is updated by stt_switch
+    #     prt.todo("Remove forced trigger for the RUN variable.")
+    #     my_node.run = True
+    #
+    #     #while not my_node.is_shutdown():
+    #     while True:
+    #
+    #         # This  Delay Loop is broken by TOPIC=/hearts/stt_toggle
+    #         while my_node.run == False:
+    #            rclpy.sleep = (0.1)
+    #
+    #         audio = my_node.get_audio_from_mic(energy_threshold, pause_threshold,
+    #                 dynamic_energy_threshold)
+    #
+    #         try:
+    #             time_begin = my_node.get_clock().now()
+    #             prt.info(settings)
+    #             msg = String()
+    #
+    #             msg.data  = my_node.recognize(audio)
+    #
+    #             time_end = my_node.get_clock().now()
+    #             elapsed_time= time_end - time_begin
+    #
+    #             prt.info(cname + "Duration for Speech Recogniion process = " +
+    #                               str(elapsed_time) )
+    #             prt.info(cname + "SPEECH HEARD by ROBOT.")
+    #             prt.result(cname + "" + msg.data + "\n")
+    #
+    #         except Exception as exc:
+    #             prt.error(cname + "Exception from speech_recogniser")
+    #             prt.error(str(exc))
+    #
+    #         if not msg.data is None:
+    #         #    text = text.strip()
+    #         #    my_node.publish_.publish(text.encode('utf-8'))
+    #             my_node.publish_.publish(msg)
+
+
 #####  END OF: class SpeechRecognizer():
 ########################################
 
@@ -286,71 +398,74 @@ class SpeechRecognizer(Node):
 #
 def main(args=None):
     rclpy.init(args=args)
-    prt.info(cname + "********************** in main")
+    prt.info(cname + "********************** XXX Starting  in main")
 
     my_node = SpeechRecognizer()
-
-
-    speech_recognition_engine = my_node.get_parameter(
-    'SR_SPEECH_ENGINE').get_parameter_value().string_value
-    energy_threshold = my_node.get_parameter(
-    'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
-    pause_threshold = my_node.get_parameter(
-    'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
-
-    dynamic_energy_threshold  = False # default is "True"
-
-    my_node.set_speech_recognition_engine(speech_recognition_engine)
-
-    prt.info(cname + "speech_recognition_engine: " + speech_recognition_engine)
-    prt.info(cname + "Energy threshold         : " + str(energy_threshold))
-    prt.info(cname + "Pause threshold          : " + str(pause_threshold))
-    settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/"+ \
-               str(energy_threshold)+"/"+str(pause_threshold)
-
-    prt.info(cname + "audio source is microphone")
-    my_node.set_audio_source("mic")
-    rate = my_node.create_rate(1)
-
-    # this class variable is updated by stt_switch
-    prt.todo("Remove forced trigger for the RUN variable.")
-    my_node.run = True
-
-    #while not my_node.is_shutdown():
-    while True:
-
-        # This  Delay Loop is broken by TOPIC=/hearts/stt_toggle
-        while my_node.run == False:
-           rclpy.sleep = (0.1)
-
-        audio = my_node.get_audio_from_mic(energy_threshold, pause_threshold,
-                dynamic_energy_threshold)
-
-        try:
-            time_begin = my_node.get_clock().now()
-            prt.info(settings)
-            msg = String()
-
-            msg.data  = my_node.recognize(audio)
-
-            time_end = my_node.get_clock().now()
-            elapsed_time= time_end - time_begin
-
-            prt.info(cname + "Duration for Speech Recogniion process = " +
-                              str(elapsed_time) )
-            prt.info(cname + "SPEECH HEARD by ROBOT.")
-            prt.result(cname + "" + msg.data + "\n")
-
-        except Exception as exc:
-            prt.error(cname + "Exception from speech_recogniser")
-            prt.error(str(exc))
-
-        if not msg.data is None:
-        #    text = text.strip()
-        #    my_node.publish_.publish(text.encode('utf-8'))
-            my_node.publish_.publish(msg)
-
     rclpy.spin(my_node)
+
+
+    # speech_recognition_engine = my_node.get_parameter(
+    # 'SR_SPEECH_ENGINE').get_parameter_value().string_value
+    # energy_threshold = my_node.get_parameter(
+    # 'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
+    # pause_threshold = my_node.get_parameter(
+    # 'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
+    #
+    # dynamic_energy_threshold  = False # default is "True"
+    #
+    # my_node.set_speech_recognition_engine(speech_recognition_engine)
+    #
+    # prt.info(cname + "speech_recognition_engine: " + speech_recognition_engine)
+    # prt.info(cname + "Energy threshold         : " + str(energy_threshold))
+    # prt.info(cname + "Pause threshold          : " + str(pause_threshold))
+    # settings = cname + "SR/ET/PT: " + speech_recognition_engine + "/"+ \
+    #            str(energy_threshold)+"/"+str(pause_threshold)
+    #
+    # prt.info(cname + "audio source is microphone")
+    # my_node.set_audio_source("mic")
+    # rate = my_node.create_rate(1)
+    #
+    # # this class variable is updated by stt_switch
+    # prt.todo("Remove forced trigger for the RUN variable.")
+    # my_node.run = True
+    # firstpass = 1
+    # #while not my_node.is_shutdown():
+    # while True:
+    #
+    #     # This  Delay Loop is broken by TOPIC=/hearts/stt_toggle
+    #     while my_node.run == False:
+    #        rclpy.sleep = (0.1)
+    #
+    #     audio = my_node.get_audio_from_mic(energy_threshold, pause_threshold,
+    #             dynamic_energy_threshold)
+    #
+    #     try:
+    #         time_begin = my_node.get_clock().now()
+    #         prt.info(settings)
+    #         msg = String()
+    #
+    #         msg.data  = my_node.recognize(audio)
+    #
+    #         time_end = my_node.get_clock().now()
+    #         elapsed_time= time_end - time_begin
+    #
+    #         prt.info(cname + "Duration for Speech Recogniion process = " +
+    #                           str(elapsed_time) )
+    #         prt.info(cname + "SPEECH HEARD by ROBOT.")
+    #         prt.result(cname + "" + msg.data + "\n")
+    #
+    #     except Exception as exc:
+    #         prt.error(cname + "Exception from speech_recogniser")
+    #         prt.error(str(exc))
+    #
+    #     if not msg.data is None:
+    #     #    text = text.strip()
+    #     #    my_node.publish_.publish(text.encode('utf-8'))
+    #         my_node.publish_.publish(msg)
+
+
+
+
 
     ### self.create_subscription.sleep()
 

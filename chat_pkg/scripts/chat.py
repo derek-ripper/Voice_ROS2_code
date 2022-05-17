@@ -32,11 +32,8 @@ class Chat(Node):
         self.subscription = self.create_subscription(
             String, '/stt', self.listener_callback,  10)
 
-        self.pub_text       = self.create_publisher(
+        self.pub_text      = self.create_publisher(
             String, '/tts',        10)
-        # self.pub_stt_switch = self.create_publisher(
-        #     String, '/stt_switch', 10)
-        # #self.timer1_=self.create_timer(2, self.speakout)
 
     def listener_callback(self, msg):
         prt.debug(cname + "In listener subscriber callback")
@@ -53,29 +50,6 @@ class Chat(Node):
         self.pub_text.publish(msg)
         prt.debug(cname+'LEAVE def  speakout ')
 
-    # def chatting(self,text2say):
-    #     prt.debug(cname+'Enter def  chatting ')
-    #     msg = String()
-    #     msg.data = text2say
-    #     prt.debug(cname+'msg.data is: '  + msg.data)
-    #     #self.set_stt_switch ("OFF")
-    #
-    #     try:
-    #         self.pub_text_.publish(msg)
-    #
-    #         #self.set_stt_switch ("ON")
-    #     except:
-    #         prt.error(cname+"pubish call to stt went wrong!")
-    #     # doitagain = False
-    #     # while doitagain == True:
-    #     #     prt.debug(cname+'Eneter def  chatting doitagain loop ')
-    #     #     #doitagain = False
-    #     #     msg.data = 'Speak now please'
-    #     #     self.pub_text_.publish(msg)
-    #
-    #     prt.debug(cname+"2nd pub attempt")
-    #     self.pub_text_.publish(msg)
-    #     prt.debug(cname+'Leave def  chatting ')
 
 def main(args=None):
     rclpy.init(args=args)
@@ -86,10 +60,6 @@ def main(args=None):
 
 
     rclpy.shutdown()
-
-
-
-
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
