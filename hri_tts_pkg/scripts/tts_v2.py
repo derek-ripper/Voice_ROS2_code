@@ -73,13 +73,13 @@ class Sayit(Node):
         prt.debug(cname+'playing mp3 file now?')
 
         # self.set_stt_switch("kill")
-        rc = os.system("mpg123  TheTextToSay.mp3")
+        rc = os.system("mpg123  TheTextToSay.mp3 >/dev/null")
         rc = os.system("rm  TheTextToSay.mp3")
         # self.set_stt_switch("live")
 
         prt.debug(cname+"rtn code: "+str(rc))
         prt.debug(cname+"Speaking is complete!!!")
-        prt.todo(cname+'Add "rm" command for mp3 file')
+        prt.blank()
 
         # re-establish subscriber
         ###self.listen         = self.create_subscription(
