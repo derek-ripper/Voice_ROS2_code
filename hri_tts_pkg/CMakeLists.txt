@@ -24,6 +24,7 @@ ament_python_install_package(scripts/)
 
 install(PROGRAMS
 scripts/tts_v2.py
+scripts/tts_v2hw.py
 DESTINATION lib/${PROJECT_NAME}/
 )
 
