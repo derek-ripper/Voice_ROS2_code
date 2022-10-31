@@ -5,9 +5,9 @@
 # Created : 30 Sep 2022
 # Purpose : To listen for text string on topic "/tts" and to say it
 #             AND To avoid robot listening to it's self:
-#			the mic is deavtivated	the spk is activated
-#			speech is spoken
-#			the mic is activated 	the spk is deactivated
+#           the mic is deavtivated  the spk is activated
+#           speech is spoken
+#           the mic is activated    the spk is deactivated
 ################################################################################
 # Reference:
 #   https://www.geeksforgeeks.org/convert-text-speech-python/
@@ -39,8 +39,8 @@ prt = TC.Tc()
 cname = " tts_v2hw-"
 class speak(Node):
     def __init__(self):
-        self.ac = actrl()
         super().__init__('tts_node')
+        self.ac = actrl.audio_control()
         self.language = 'en'
         self.accent   = 'co.uk'
         self.slow     = 'False'
@@ -55,7 +55,7 @@ class speak(Node):
         txt = msg.data
         prt.debug(cname+"TOPIC: /tts contains: " + txt)
         #### Switch OFF microphone
-        self.ac.set_mic(self.ac.mic_off)
+        self.ac.mic_off()
         # Create the text file to be spoken
         myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
 
@@ -69,8 +69,9 @@ class speak(Node):
         prt.debug(cname+"rtn code rc1: "+str(rc1))
         rc2 = os.system("rm  TheTextToSay.mp3")
         prt.debug(cname+"rtn code rc2: "+str(rc2))
+        
         #### Switch ON microphone
-        self.ac.set_mic(self.ac.mic_on)
+        self.ac.mic_on()
         prt.debug(cname+"Speaking is complete!!!")
         prt.blank()
 ##### end of class def for "speak"
@@ -87,4 +88,4 @@ if  __name__ == '__main__':
         prt.blank()
 
         prt.warning(cname+" Cancelelld by user !")
-	
+    

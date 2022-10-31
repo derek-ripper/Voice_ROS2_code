@@ -38,9 +38,8 @@ class Chat(Node):
     def listener_callback(self, msg):
         prt.debug(cname + "In listener subscriber callback")
         self.get_logger().info('I heard: "%s"' % msg.data)
-        #self.set_stt_switch('OFF')
+
         self.speakout(msg.data)
-        #self.set_stt_switch('ON')
         return
 
     def speakout(self,text2speak):

@@ -28,7 +28,7 @@ ament_python_install_package(${PROJECT_NAME})
 
 install(PROGRAMS
 py_utils_pkg/dummy_class.py
-py_utils_pkg/text_colours.py
+## py_utils_pkg/text_colours.py
 DESTINATION lib/${PROJECT_NAME}
 )
 ### end of added commands

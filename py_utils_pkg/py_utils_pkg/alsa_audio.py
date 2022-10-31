@@ -14,10 +14,10 @@ class audio_control():
     def __init__(self):
         self.mixer_spk = alsaaudio.Mixer(control='Master', id=0)
         self.mixer_mic = alsaaudio.Mixer(control='Capture', id=0)
-        self.muted    = 1 # muted
+        self.muted      = 1 # muted
         self.notmuted = 0 # not muted
-        self.micoff   = 0 # mic off
-        self.micon    = 1 # mic on
+        self.micoff       = 0 # mic off
+        self.micon       = 1 # mic on
         
     def list_status(self):
         print("\n***** ALSAAUDIO current ssettings for MIC & SPK")
@@ -57,14 +57,22 @@ class audio_control():
    
     def set_mic(self,arg1):
         self.mixer_mic.setrec(arg1)
+
+    def mic_off(self):
+        self.set_mic(self.micoff)
+        self.set_spk(self.notmuted)
+
+    def mic_on(self):
+        self.set_spk(self.muted)
+        self.set_mic(self.micon)
         
         
 ##### end of class def for "diags"
 
 def main(args=None):
     d = audio_control()
-    d.set_mic(d.micon)            ## mic     off
-    d.set_spk(d.notmuted)      ## speaker ON
+    d.mic_off()        ## mic     off, Speaker ON
+    d.mic_on()        ## speaker OF, mic  ON
     d.list_status()
     print("\n*****  The End  *****")
 
