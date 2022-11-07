@@ -7,7 +7,6 @@
 from launch             import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions     import ExecuteProcess
-
 def generate_launch_description():
     ld =  LaunchDescription ([
         Node(
@@ -18,8 +17,8 @@ def generate_launch_description():
         emulate_tty = True,
         parameters =[
         {"SR_SPEECH_ENGINE"    : "google"},
-        {"SR_ENERGY_THRESHOLD" : 300     },
-        {"SR_PAUSE_THRESHOLD"  : 1.01    },
+        {"SR_ENERGY_THRESHOLD" : 650     },
+        {"SR_PAUSE_THRESHOLD"  :   0.80   },
         ])
     ])
     return ld

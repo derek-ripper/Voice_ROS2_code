@@ -34,25 +34,20 @@ class Chat(Node):
 
         self.pub_text      = self.create_publisher(
             String, '/tts',        10)
+        return
 
     def listener_callback(self, msg):
-        prt.debug(cname + "In listener subscriber callback")
-        self.get_logger().info('I heard: "%s"' % msg.data)
-
         self.speakout(msg.data)
         return
 
     def speakout(self,text2speak):
-        prt.debug(cname+'ENTER def speakout ')
         msg      = String()
         msg.data ="You said "+ text2speak
         self.pub_text.publish(msg)
-        prt.debug(cname+'LEAVE def  speakout ')
-
+        return
 
 def main(args=None):
     rclpy.init(args=args)
-    prt.debug(cname+"Enter def main")
 
     waffle = Chat()
     rclpy.spin(waffle)

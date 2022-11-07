@@ -92,9 +92,6 @@ class SpeechRecognizer(Node):
 
     def jfdi(self):
 
-            prt.debug("Enter JFDI code!")
-
-
             audio = self.get_audio_from_mic(self.energy_threshold, self.pause_threshold,
                     self.dynamic_energy_threshold)
 

@@ -4,17 +4,17 @@
 # Author  : Derek Ripper
 # Created : 30 Sep 2022
 # Purpose : To listen for text string on topic "/tts" and to say it
-#             AND To avoid robot listening to it's self:
-#           the mic is deavtivated  the spk is activated
-#           speech is spoken
-#           the mic is activated    the spk is deactivated
+#                AND To avoid robot listening to it's self:
+#                - the mic is deavtivated  the spk is activated
+#                - speech is spoken
+#                - the mic is activated    the spk is deactivated
 ################################################################################
 # Reference:
 #   https://www.geeksforgeeks.org/convert-text-speech-python/
 #
 # Required support is:
-#   pip install     gTTS            # google TTS API - NO registration/Licence
-#                                                      needed.
+#
+#   sudo pip install     gTTS            # google TTS API - NO registration/Licence required.                                         
 #   sudo apt-get update -y
 #   sudo apt-get -y install mpg321  # This isn a command line mpeg player
 #
@@ -40,20 +40,20 @@ cname = " tts_v2hw-"
 class speak(Node):
     def __init__(self):
         super().__init__('tts_node')
-        self.ac = actrl.audio_control()
+        self.ac           = actrl.audio_control()
         self.language = 'en'
-        self.accent   = 'co.uk'
-        self.slow     = 'False'
+        self.accent     = 'co.uk'
+        self.slow        = 'False'
 
         self.listen         = self.create_subscription(
             String,'/tts',self.listen_callback,10)
 
         # self.listen   # to avoid unused variable message
         prt.debug(cname+"TTS - Leave init")
+        return
 
     def listen_callback(self, msg):
         txt = msg.data
-        prt.debug(cname+"TOPIC: /tts contains: " + txt)
         #### Switch OFF microphone
         self.ac.mic_off()
         # Create the text file to be spoken
@@ -63,18 +63,19 @@ class speak(Node):
         myobj.save('TheTextToSay.mp3')
 
         # Playing the converted file
-        prt.debug(cname+'playing mp3 file now?')
-
-        rc1 = os.system("mpg123  TheTextToSay.mp3 >/dev/null")
-        prt.debug(cname+"rtn code rc1: "+str(rc1))
+        rc1 = os.system("mpg123  -q  TheTextToSay.mp3")
         rc2 = os.system("rm  TheTextToSay.mp3")
-        prt.debug(cname+"rtn code rc2: "+str(rc2))
+        if(rc1 != 0 or rc2 != 0):
+            prt.error(cname+"rtn code rc1 - mpg123: "+str(rc1))
+            prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
         
         #### Switch ON microphone
         self.ac.mic_on()
-        prt.debug(cname+"Speaking is complete!!!")
+        prt.info(cname+"Speaking is complete!!!")
         prt.blank()
+        return
 ##### end of class def for "speak"
+
 def main(args=None):
     rclpy.init(args=args)
     prt.info(cname + "*********************** in main")
