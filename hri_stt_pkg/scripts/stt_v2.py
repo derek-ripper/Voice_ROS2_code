@@ -28,19 +28,17 @@ import sys, os
 
 import rclpy
 
-import threading
-
 from rclpy.node     import Node
 
 from std_msgs.msg   import String, Bool
 #import pocketsphinx # In June 2017 gave up on this one!!
 
 import speech_recognition as sr
-# import python_support_library.text_colours     as TC      # print text in various colours/sstyles
-import  py_utils_pkg.text_colours     as TC
+import  py_utils_pkg.text_colours     as TC  # print text in various colours/styles
+
 # Only used by "google cloud platform" (GCP) speech recognition
 # GCP needs an account with a "Payment Method!" currently there is not one.
-#     The 2 sets ofcredentials in the code base are for Derek Ripper & Zeke Steer
+#     The 2 sets ofcredentials in the code  are for Derek Ripper & Zeke Steer
 import gcp_keywords_r     as gcpk # GCP preferred keyword/sphrases
 import gcp_credentials_v2 as gcpc # GCP credentials to access GCP speech recognition
 
@@ -58,10 +56,8 @@ class SpeechRecognizer(Node):
         self.declare_parameter("SR_ENERGY_THRESHOLD", 1201)
         self.declare_parameter("SR_PAUSE_THRESHOLD",  1.00)
 
-        self.publish_ = self.create_publisher(String, '/stt', 10)
-        
-        self.listen_toggle = self.create_subscription(String,'/stt_switch',self.stt_switch_callback,10)
-
+        self.publish_ = self.create_publisher(String, '/hearts/stt', 10)
+    
         self.audio_sources = [ 'mic' ]
         self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 'google_cloud', 'houndify', 'bing' ]
 
@@ -107,31 +103,7 @@ class SpeechRecognizer(Node):
                 prt.error(str(exc))
 
             if not msg.data is None:
-            #    text = text.strip()
-            #    my_node.publish_.publish(text.encode('utf-8'))
                 self.publish_.publish(msg)
-
-
-    def stt_switch_callback(self, msg):
-        prt.debug(cname+"========== enter stt_switch_callback ##########################")
-
-        switch = msg.data
-        switch = switch.upper()
-        prt.debug(cname+"arg = "+switch)
-        if   switch == "LIVE":
-            prt.info(cname + "========== is listening.  ############################")
-            self.publish_ = self.create_publisher(String, '/stt', 10)
-
-        elif switch == "KILL":
-            try:
-                prt.info(cname + "========== is NOT listening.###########################")
-                del self.publish_
-            except:
-                prt.warning(cname + "========== NO publish object to delete!")
-        else:
-            prt.error(cname+'stt_switch_callback - Invalid arg: '+str(switch))
-
-        return
 
 
     def set_audio_source(self, audio_source):
@@ -319,9 +291,9 @@ class SpeechRecognizer(Node):
 
         with self.m as source:
             #self.sp_tec.adjust_for_ambient_noise(source)
-            self.sp_rec.dynamic_energy_threshold = dynamic_energy_threshold # default is "True"
-            self.sp_rec.energy_threshold         = energy_threshold         # defaultis 300
-            self.sp_rec.pause_threshold          = pause_threshold          # Default is 0.8 secs
+            self.sp_rec.dynamic_energy_threshold = dynamic_energy_threshold  # std package default is "True"
+            self.sp_rec.energy_threshold         = energy_threshold                         # std package default is 300
+            self.sp_rec.pause_threshold          = pause_threshold                           # std package default is 0.8 secs
 
             prt.input(cname + "ROBOT is Waiting for voice input .......")
 
@@ -341,16 +313,13 @@ def main(args=None):
     prt.info(cname + "********************** Starting  in main")
 
     my_node = SpeechRecognizer()
-    thread = threading.Thread(target=rclpy.spin, args=(my_node, ),  daemon=True)
-    thread.start()
-    
-    rate = my_node.create_rate(2)
-    while rclpy.ok():
-        rate.sleep()
 
+ 
+    while rclpy.ok():
         my_node.jfdi()
-   
-    rclpy.spin(my_node)   
+        
+    rclpy.spin(my_node)  
+
 
 
 if __name__ == '__main__':

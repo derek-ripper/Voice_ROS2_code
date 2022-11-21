@@ -3,7 +3,7 @@
 # Filename: tts_v2hw.py
 # Author  : Derek Ripper
 # Created : 30 Sep 2022
-# Purpose : To listen for text string on topic "/tts" and to say it
+# Purpose : To listen for text string on topic "/hearts/tts" and to say it
 #                AND To avoid robot listening to it's self:
 #                - the mic is deavtivated  the spk is activated
 #                - speech is spoken
@@ -46,10 +46,8 @@ class speak(Node):
         self.slow        = 'False'
 
         self.listen         = self.create_subscription(
-            String,'/tts',self.listen_callback,10)
+            String,'/hearts/tts',self.listen_callback,10)
 
-        # self.listen   # to avoid unused variable message
-        prt.debug(cname+"TTS - Leave init")
         return
 
     def listen_callback(self, msg):
@@ -63,10 +61,10 @@ class speak(Node):
         myobj.save('TheTextToSay.mp3')
 
         # Playing the converted file
-        rc1 = os.system("mpg123  -q  TheTextToSay.mp3")
+        rc1 = os.system("mpg123  -q  TheTextToSay.mp3 2>&1 /dev/null")
         rc2 = os.system("rm  TheTextToSay.mp3")
         if(rc1 != 0 or rc2 != 0):
-            prt.error(cname+"rtn code rc1 - mpg123: "+str(rc1))
+            prt.error(cname+"rtn code rc1 - mpg123 : "+str(rc1))
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
         
         #### Switch ON microphone
@@ -78,7 +76,7 @@ class speak(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    prt.info(cname + "*********************** in main")
+   
     tts_node  = speak()
     rclpy.spin(tts_node)
 

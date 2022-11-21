@@ -30,10 +30,10 @@ class Chat(Node):
     def __init__(self):
         super().__init__('my_node')
         self.subscription = self.create_subscription(
-            String, '/stt', self.listener_callback,  10)
+            String, '/hearts/stt', self.listener_callback,  10)
 
         self.pub_text      = self.create_publisher(
-            String, '/tts',        10)
+            String, '/hearts/tts',        10)
         return
 
     def listener_callback(self, msg):
