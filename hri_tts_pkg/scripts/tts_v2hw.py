@@ -25,10 +25,10 @@
 # import the required google module for "text to speech" conversion
 from gtts import gTTS
 import rclpy
-from   rclpy.node      import Node
+from   rclpy.node   import Node
 from   std_msgs.msg import String
-# import alsaaudio
-import alsa_audio as actrl
+# import 
+import py_utils_pkg.alsa_audio as actrl
 
 import os
 # simple routine to use instead of print() -
@@ -40,7 +40,7 @@ cname = " tts_v2hw-"
 class speak(Node):
     def __init__(self):
         super().__init__('tts_node')
-        self.ac           = actrl.audio_control()
+        self.ac           = actrl.Audio_control()
         self.language = 'en'
         self.accent     = 'co.uk'
         self.slow        = 'False'

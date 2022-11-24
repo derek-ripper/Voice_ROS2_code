@@ -4,20 +4,20 @@
 # Author  : Derek Ripper
 # Created : 05 Oct 2022
 # Purpose : Define a class to switch speakers/mic ON & OFF as needed
-#                 Required by TTS to stop root lisyening to itsself!
+#                 Required by TTS to stop root listening to its self!
 ################################################################################
 # Updates:
 # ??/???/???? by ????? - info ......
 ################################################################################
 import alsaaudio
-class audio_control():
+class Audio_control():
     def __init__(self):
-        self.mixer_spk = alsaaudio.Mixer(control='Master', id=0)
+        self.mixer_spk = alsaaudio.Mixer(control='Master',  id=0)
         self.mixer_mic = alsaaudio.Mixer(control='Capture', id=0)
-        self.muted      = 1 # muted
-        self.notmuted = 0 # not muted
-        self.micoff       = 0 # mic off
-        self.micon       = 1 # mic on
+        self.muted     = 1 # muted
+        self.notmuted  = 0 # not muted
+        self.micoff     = 0 # mic off
+        self.micon     = 1 # mic on
         
     def list_status(self):
         print("\n***** ALSAAUDIO current ssettings for MIC & SPK")
@@ -67,7 +67,7 @@ class audio_control():
         self.set_mic(self.micon)
         
         
-##### end of class def for "diags"
+##### end of class def for "Audio_control"
 
 def main(args=None):
     d = audio_control()
