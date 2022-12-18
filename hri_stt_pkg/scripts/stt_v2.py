@@ -8,10 +8,10 @@
 #              to text.
 # History:
 # Original code was stt.py and written for ERL Lisbon competition in June 2017
-# This is the same BUT 2 fuctions have been renoved:
+# This is the same BUT 2 fuctions have been removed:
 #   1-To record voice on demand - ie not contunuous listening. Was neded for
 #     FBM's (functional bench marks) in ERL competions.
-#   2-To batch process a diectory of prerecorded .wav files and output results in EXCEL
+#   2-To batch process a directory of prerecorded .wav files and output results in EXCEL
 #     format to compare to the actual answers (ERL Gold Standard file)
 #     Output also in competition format for the ERL judge.
 
@@ -53,13 +53,14 @@ class SpeechRecognizer(Node):
         super().__init__('SpeechRecognizer')
         prt.info(cname+" init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
-        self.declare_parameter("SR_ENERGY_THRESHOLD", 1201)
-        self.declare_parameter("SR_PAUSE_THRESHOLD",  1.00)
+        self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
+        self.declare_parameter("SR_PAUSE_THRESHOLD",  0.80   ) # pkg default
 
         self.publish_ = self.create_publisher(String, '/hearts/stt', 10)
     
         self.audio_sources = [ 'mic' ]
-        self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 'google_cloud', 'houndify', 'bing' ]
+        self.speech_recognition_engines = [ 'google', 'ibm', 'sphinx', 
+                                            'google_cloud', 'houndify', 'azure']
 
         self.sp_rec = sr.Recognizer()
         self.sp_rec.operation_timeout = 10
@@ -93,8 +94,19 @@ class SpeechRecognizer(Node):
 
             try:
                 msg = String()
-                msg.data  = self.recognize(audio)
 
+                if (self.speech_recognition_engine == "azure") :
+                    #str() only needed by azure else throws an exception error!?
+                    msg.data  = str(self.recognize(audio))
+                    
+                    #returns data in format: ("speech heard", Confidence number)
+                    #hence only need the first item.
+                    msg.data, confidence = msg.data.split(",")
+                    msg.data = msg.data[1:]
+                    #msg.data = msg.data.replace("'","")
+                else:
+                    msg.data  = self.recognize(audio)
+                
                 prt.info(cname + "SPEECH HEARD by ROBOT.")
                 prt.result(cname + "" + msg.data + "\n")
 
@@ -137,7 +149,7 @@ class SpeechRecognizer(Node):
             self.init_houndify()
             self.speech_recognition_engine = speech_recognition_engine
 
-        elif speech_recognition_engine == self.speech_recognition_engines[5]: # bng
+        elif speech_recognition_engine == self.speech_recognition_engines[5]: # was bing
             self.init_azure()
             self.speech_recognition_engine = speech_recognition_engine
 
@@ -239,7 +251,7 @@ class SpeechRecognizer(Node):
 
     def recognize_azure(self, audio):
         return self.sp_rec.recognize_azure(audio, key=self.azure_key,
-        location='westeurope', language='en-GB' )
+        location='westeurope', language='en-GB')
 
 
     def recognize(self, audio):

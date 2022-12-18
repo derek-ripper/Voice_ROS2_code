@@ -14,9 +14,9 @@
 #
 # Required support is:
 #
-#   sudo pip install     gTTS            # google TTS API - NO registration/Licence required.                                         
+#   sudo pip install     gTTS       # google TTS API - NO registration/Licence required.                                         
 #   sudo apt-get update -y
-#   sudo apt-get -y install mpg321  # This isn a command line mpeg player
+#   sudo apt-get -y install mpg321  # This is a command line mpeg player
 #
 ################################################################################
 # Updates:
@@ -41,9 +41,9 @@ class speak(Node):
     def __init__(self):
         super().__init__('tts_node')
         self.ac           = actrl.Audio_control()
-        self.language = 'en'
+        self.language   = 'en'
         self.accent     = 'co.uk'
-        self.slow        = 'False'
+        self.slow       = 'False'
 
         self.listen         = self.create_subscription(
             String,'/hearts/tts',self.listen_callback,10)
@@ -52,8 +52,10 @@ class speak(Node):
 
     def listen_callback(self, msg):
         txt = msg.data
+        prt.debug(cname + txt)
         #### Switch OFF microphone
         self.ac.mic_off()
+        prt.info(cname+"Microphone is MUTED speaker ON!")
         # Create the text file to be spoken
         myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
 
@@ -62,14 +64,14 @@ class speak(Node):
 
         # Playing the converted file
         rc1 = os.system("mpg123  -q  TheTextToSay.mp3 2>&1 /dev/null")
-        rc2 = os.system("rm  TheTextToSay.mp3")
+        rc2 =-99 #rc2 = os.system("rm  TheTextToSay.mp3")
         if(rc1 != 0 or rc2 != 0):
             prt.error(cname+"rtn code rc1 - mpg123 : "+str(rc1))
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
         
         #### Switch ON microphone
         self.ac.mic_on()
-        prt.info(cname+"Speaking is complete!!!")
+        prt.info(cname+"Microphone is ACTIVE speaker OFF!")
         prt.blank()
         return
 ##### end of class def for "speak"
