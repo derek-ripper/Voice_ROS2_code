@@ -3,14 +3,14 @@
 # Filename: xmasqa.py
 # Author  : Derek Ripper
 # Created : 18 Dec 2022
-# Purpose : Define a class to define questins and answers for Xmas 2022 Robot
+# Purpose : Define a class to define questions and answers for Xmas 2022 Robot
 #           video.
 #               
 ################################################################################
 # Updates:
 # ??/???/???? by ????? - info ......
 ################################################################################
-cname = "xmasq&a "
+cname = "xmasqa "
 
 import random
 
@@ -21,51 +21,94 @@ class QandA():
             #what is your name",
             "your name",
             
-            # what would ypu like for christmas
+            # what would you like for christmas
             "like for christmas",
             
             #where do you live
             "you live",
+            
+            #tell me a christmas joke
+            "christmas joke",
+            
+            #who is your favorite employee at B R L
+            "employee",
             ]
             
         self.answers=[
-                ["my name is just robot as i'm still under constuction"],
+                ["my name is just robot as i'm still under constuction",
+                 "I'm nameless but would like to be called Marvin or Kryten given the choice",
+                 "still waiting for some one to notice me to give me a name",
+                ],
             
                 ["a large can of w d forty please",
-                 "another robot to share my lack of live with would be good",
-                 "a suprise please"],
+                 "another robot to share my lack of life with would be good",
+                 "a suprise please",
+                ],
                  
                 ["I live in this very lonely laboratory called B R L",
-                 "I live at B R L",
-                 "I live in Bristol but would prefer anywhere else"],
-                ]   
+                 "I live at the B R L",
+                 "I live in Bristol but would prefer anywhere else",
+                ],
+                
+                ["xmas joke 1",
+                 "xmas joke 2",
+                 "xmas joke 3",
+                ],
+                
+                ["Gorden as he is a great guy and always here",
+                 "Tom will be when he finishes building me",
+                ],
+            ]   
                 
         self.nq = len(self.questions)   
         self.na = len(self.answers)
         
+    def printme(self):
+        print("Phrases in questions arrary to be searched for to get a response")
+        
         for row in range(self.nq):
-            print("nq row is: "+str(row)+" "+self.questions[row]+"\n")
-            
+            print("nq row is: "+str(row)+" "+self.questions[row])
+        print("\n")
+        
+        print("Answers array")
         for row in range(self.na):
-            print("na row is: "+str(row)+"\n")
-            npa = len(self.answers[row]) -1
-            
-            rancol = random.randint(0, npa)
-            print("num of possible answers: "+str(npa))
-            #for col in range(npa):
-            print(self.answers[row][rancol])
+            print("Row in Answers array    is: "+str(row))
+            npa = len(self.answers[row])
+            print("Number of possible answers: "+str(npa))
+
+            for col in range(0, npa):
+                print(self.answers[row][col])
+            print("\n")
 
     def process_answer(self,stt):
-        #search for key words in stt argument
-        print("stt: ",stt)
-        for ans in self.questions:
-            if stt.find(ans) > 1:
-                print("FOUND")
-                print("answers are: ",ans)
-            else:
-                print("NOT Found")    
+        stt = stt.lower()
+      
+        if stt == "bad_recognition":
+            return "Just heard some noise so please repeat your question"
+            
+        else:
+            #search for key words in stt argument
+            print("stt: ",stt)
+            irow = -1
+            for keyphrase in self.questions:
+                irow += 1
+                index = stt.find(keyphrase)
+                if index > -1:
+                    found = True
+                    break
+                else:   
+                    found = False 
 
-        
+            if found == True:        
+                # Number of Possible Answsers in the list item
+                npa = len(self.answers[irow]) -1
+                rancol = random.randint(0, npa)
+                text2speak = self.answers[irow][rancol]
+            else:
+                text2speak = "Sorry but I have not been programmed for your question please try again"
+                
+            return (text2speak)
+
 
 #################################################################################################
 ###                                   MAIN   PRGRAM
@@ -76,8 +119,10 @@ def main():
 
     qanda = QandA()
     
-    qanda.process_answer("what would ypu like for christmas")
-
+    qanda.printme()
+    
+    texttospeak = qanda.process_answer("your name")
+    print("Text for robot to speak:\n",texttospeak)
  
 
 
