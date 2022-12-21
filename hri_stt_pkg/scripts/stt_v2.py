@@ -84,7 +84,7 @@ class SpeechRecognizer(Node):
 
         prt.info(cname + "audio source is microphone")
         self.set_audio_source("mic")
-    #    rate = self.create_rate(10)
+
 
 
     def jfdi(self):
@@ -304,10 +304,10 @@ class SpeechRecognizer(Node):
         with self.m as source:
             #self.sp_tec.adjust_for_ambient_noise(source)
             self.sp_rec.dynamic_energy_threshold = dynamic_energy_threshold  # std package default is "True"
-            self.sp_rec.energy_threshold         = energy_threshold                         # std package default is 300
-            self.sp_rec.pause_threshold          = pause_threshold                           # std package default is 0.8 secs
+            self.sp_rec.energy_threshold         = energy_threshold          # std package default is 300
+            self.sp_rec.pause_threshold          = pause_threshold           # std package default is 0.8 secs
 
-            prt.input(cname + "ROBOT is Waiting for voice input .......")
+
 
             return self.sp_rec.listen(source)
 

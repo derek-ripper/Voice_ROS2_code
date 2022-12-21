@@ -16,7 +16,7 @@ class Audio_control():
         self.mixer_mic = alsaaudio.Mixer(control='Capture', id=0)
         self.muted     = 1 # muted
         self.notmuted  = 0 # not muted
-        self.micoff     = 0 # mic off
+        self.micoff    = 0 # mic off
         self.micon     = 1 # mic on
         
     def list_status(self):
@@ -71,8 +71,8 @@ class Audio_control():
 
 def main(args=None):
     d = audio_control()
-    d.mic_off()        ## mic     off, Speaker ON
-    d.mic_on()        ## speaker OF, mic  ON
+    d.mic_off()       ## mic     OFF, Speaker ON
+    d.mic_on()        ## speaker OFF, mic  ON
     d.list_status()
     print("\n*****  The End  *****")
 

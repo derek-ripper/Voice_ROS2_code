@@ -13,6 +13,10 @@
 cname = "xmasqa "
 
 import random
+# simple routine to use instead of print() -
+# To get colour coded messages for ERROR,INFO,RESULT, etc
+import  py_utils_pkg.text_colours     as TC
+prt = TC.Tc()
 
 class QandA():
     def __init__(self):
@@ -30,7 +34,7 @@ class QandA():
             #tell me a christmas joke
             "christmas joke",
             
-            #who is your favorite employee at B R L
+            #who is your favourite employee at B R L
             "employee",
             ]
             
@@ -50,13 +54,15 @@ class QandA():
                  "I live in Bristol but would prefer anywhere else",
                 ],
                 
-                ["xmas joke 1",
-                 "xmas joke 2",
-                 "xmas joke 3",
+                ["What do you call a robot that lives at the north pole? A snow-bot",
+                 "What is a robot's favourite food? Microchips",
+                 "Why did the robot go to the shoe shop? To get rebooted",
+                 "Why does santa have three gardens? So he can              Ho Ho Ho",
+                 "what kind of motor bike does santa ride?  A Holly Davidson",
                 ],
                 
-                ["Gorden as he is a great guy and always here",
-                 "Tom will be when he finishes building me",
+                ["Gordon as he is a great guy and always here",
+                 "Tom will be OK when he finishes building me",
                 ],
             ]   
                 
@@ -82,7 +88,7 @@ class QandA():
 
     def process_answer(self,stt):
         stt = stt.lower()
-      
+
         if stt == "bad_recognition":
             return "Just heard some noise so please repeat your question"
             
@@ -114,21 +120,21 @@ class QandA():
 ###                                   MAIN   PRGRAM
 #################################################################################################
 #
-def main():
+# def main():
 
 
-    qanda = QandA()
+    # qanda = QandA()
     
-    qanda.printme()
+    # qanda.printme()
     
-    texttospeak = qanda.process_answer("your name")
-    print("Text for robot to speak:\n",texttospeak)
+    # texttospeak = qanda.process_answer("your name")
+    # print("Text for robot to speak:\n",texttospeak)
  
 
 
 
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        prt.warning(cname+" Cancelelld by user !")
+# if __name__ == '__main__':
+    # try:
+        # main()
+    # except KeyboardInterrupt:
+        # prt.warning(cname+" Cancelelld by user !")

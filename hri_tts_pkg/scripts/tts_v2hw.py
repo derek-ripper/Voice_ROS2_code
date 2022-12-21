@@ -28,43 +28,45 @@ import rclpy
 from   rclpy.node   import Node
 from   std_msgs.msg import String
 # import 
-import py_utils_pkg.alsa_audio as actrl
-
+import py_utils_pkg.alsa_audio as actrl    # alsa control for mic and speaker
+import py_utils_pkg.xmasqa     as xmasqa   # contans questions with multiple answers
 import os
 # simple routine to use instead of print() -
 # To get colour coded messages for ERROR,INFO,RESULT, etc
 import  py_utils_pkg.text_colours     as TC
 prt = TC.Tc()
 
-cname = " tts_v2hw-"
+cname = " tts_v2hw- "
 class speak(Node):
     def __init__(self):
         super().__init__('tts_node')
-        self.ac           = actrl.Audio_control()
+        self.ac         = actrl.Audio_control()
+        self.qa         = xmasqa.QandA()
         self.language   = 'en'
         self.accent     = 'co.uk'
         self.slow       = 'False'
 
         self.listen         = self.create_subscription(
-            String,'/hearts/tts',self.listen_callback,10)
+            String,'/hearts/stt',self.listen_callback,10)
 
-        return
 
     def listen_callback(self, msg):
         txt = msg.data
-        prt.debug(cname + txt)
         #### Switch OFF microphone
         self.ac.mic_off()
         prt.info(cname+"Microphone is MUTED speaker ON!")
+        # pass text to get an appropriate answer
+        anstxt = self.qa.process_answer(txt)
+        
         # Create the text file to be spoken
-        myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
+        myobj=gTTS(text=anstxt, lang=self.language, tld=self.accent,slow=self.slow)
 
         # NB arg value for file cannot be a variable name!
         myobj.save('TheTextToSay.mp3')
 
         # Playing the converted file
         rc1 = os.system("mpg123  -q  TheTextToSay.mp3 2>&1 /dev/null")
-        rc2 =-99 #rc2 = os.system("rm  TheTextToSay.mp3")
+        rc2 = os.system("rm  TheTextToSay.mp3")
         if(rc1 != 0 or rc2 != 0):
             prt.error(cname+"rtn code rc1 - mpg123 : "+str(rc1))
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
@@ -72,6 +74,7 @@ class speak(Node):
         #### Switch ON microphone
         self.ac.mic_on()
         prt.info(cname+"Microphone is ACTIVE speaker OFF!")
+        prt.input(cname + "ROBOT is Waiting for voice input .......")
         prt.blank()
         return
 ##### end of class def for "speak"
