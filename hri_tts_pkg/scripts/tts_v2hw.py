@@ -30,6 +30,7 @@ from   std_msgs.msg import String
 # import 
 import py_utils_pkg.alsa_audio as actrl    # alsa control for mic and speaker
 import py_utils_pkg.xmasqa     as xmasqa   # contans questions with multiple answers
+
 import os
 # simple routine to use instead of print() -
 # To get colour coded messages for ERROR,INFO,RESULT, etc
@@ -57,8 +58,8 @@ class speak(Node):
         prt.info(cname+"Microphone is MUTED speaker ON!")
         # pass text to get an appropriate answer
         anstxt = self.qa.process_answer(txt)
-        
-        # Create the text file to be spoken
+        prt.info("Answer is: "+anstxt)
+        # Create the mp3 file that is to be spoken
         myobj=gTTS(text=anstxt, lang=self.language, tld=self.accent,slow=self.slow)
 
         # NB arg value for file cannot be a variable name!
@@ -71,11 +72,9 @@ class speak(Node):
             prt.error(cname+"rtn code rc1 - mpg123 : "+str(rc1))
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
         
-        #### Switch ON microphone
+        #### Switch microphone ON & speaker OFF
         self.ac.mic_on()
-        prt.info(cname+"Microphone is ACTIVE speaker OFF!")
-        prt.input(cname + "ROBOT is Waiting for voice input .......")
-        prt.blank()
+
         return
 ##### end of class def for "speak"
 

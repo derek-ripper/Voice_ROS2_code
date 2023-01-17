@@ -307,7 +307,7 @@ class SpeechRecognizer(Node):
             self.sp_rec.energy_threshold         = energy_threshold          # std package default is 300
             self.sp_rec.pause_threshold          = pause_threshold           # std package default is 0.8 secs
 
-
+            prt.input(cname + "Robot waiting for voice input .....")
 
             return self.sp_rec.listen(source)
 

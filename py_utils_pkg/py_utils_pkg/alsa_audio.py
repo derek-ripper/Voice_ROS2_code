@@ -4,7 +4,7 @@
 # Author  : Derek Ripper
 # Created : 05 Oct 2022
 # Purpose : Define a class to switch speakers/mic ON & OFF as needed
-#                 Required by TTS to stop root listening to its self!
+#                 Required by TTS to stop robot listening to its self!
 ################################################################################
 # Updates:
 # ??/???/???? by ????? - info ......
@@ -18,6 +18,7 @@ class Audio_control():
         self.notmuted  = 0 # not muted
         self.micoff    = 0 # mic off
         self.micon     = 1 # mic on
+        self.mic_on()      # ensure intial status of: mic "on" and speaker "off"
         
     def list_status(self):
         print("\n***** ALSAAUDIO current ssettings for MIC & SPK")
