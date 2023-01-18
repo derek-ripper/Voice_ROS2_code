@@ -17,9 +17,9 @@ def generate_launch_description():
         output     ="screen",
         emulate_tty = True,
         parameters =[
-        {"SR_SPEECH_ENGINE"    : "google"},
-        {"SR_ENERGY_THRESHOLD" :  300    },
-        {"SR_PAUSE_THRESHOLD"  :  0.8    },
+        {"SR_SPEECH_ENGINE"    : "azure"},
+        {"SR_ENERGY_THRESHOLD" :  302   },
+        {"SR_PAUSE_THRESHOLD"  :  0.855 },
         ]),
 
         Node(

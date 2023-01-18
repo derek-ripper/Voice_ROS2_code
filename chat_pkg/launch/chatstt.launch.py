@@ -19,7 +19,7 @@ def generate_launch_description():
         parameters =[
         {"SR_SPEECH_ENGINE"    : "google"},
         {"SR_ENERGY_THRESHOLD" : 300     },
-        {"SR_PAUSE_THRESHOLD"  : 1.01    },
+        {"SR_PAUSE_THRESHOLD"  : 0.8     },
         ]),
 
         # Node(

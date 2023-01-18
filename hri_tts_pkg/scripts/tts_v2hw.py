@@ -48,7 +48,7 @@ class speak(Node):
         self.slow       = 'False'
 
         self.listen         = self.create_subscription(
-            String,'/hearts/stt',self.listen_callback,10)
+            String,'/hearts/tts',self.listen_callback,10)
 
 
     def listen_callback(self, msg):
@@ -67,7 +67,7 @@ class speak(Node):
 
         # Playing the converted file
         rc1 = os.system("mpg123  -q  TheTextToSay.mp3 2>&1 /dev/null")
-        rc2 = os.system("rm  TheTextToSay.mp3")
+        rc2=99 ### rc2 = os.system("rm  TheTextToSay.mp3")
         if(rc1 != 0 or rc2 != 0):
             prt.error(cname+"rtn code rc1 - mpg123 : "+str(rc1))
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))

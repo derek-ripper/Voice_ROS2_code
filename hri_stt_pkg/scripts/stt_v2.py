@@ -53,8 +53,8 @@ class SpeechRecognizer(Node):
         super().__init__('SpeechRecognizer')
         prt.info(cname+" init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
-        self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
-        self.declare_parameter("SR_PAUSE_THRESHOLD",  0.80   ) # pkg default
+        self.declare_parameter("SR_ENERGY_THRESHOLD", 301    ) # pkg default
+        self.declare_parameter("SR_PAUSE_THRESHOLD",  0.85   ) # pkg default
 
         self.publish_ = self.create_publisher(String, '/hearts/stt', 10)
     
