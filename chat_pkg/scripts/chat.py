@@ -4,8 +4,7 @@
 # Created : 23 Feb 2022
 # Author  : Derek Ripper
 # Purpose : 1- To test the speech modules  stt aand tts.
-#           2- also to sort out the controlling of the robot NOT repeating what
-#             it has just said!!
+#
 #
 ###############################################################################
 # Updates:
@@ -16,10 +15,9 @@ import rclpy
 from   rclpy.node    import Node
 from   std_msgs.msg  import String
 
-# import python general utils
-import  py_utils_pkg.text_colours     as TC
-# simple routine to use instead of print() - to get colour coded messages for
-# ERROR,INFO,RESULT, messages, etc
+import py_utils_pkg.xmasqa    as xmasqa # contans questions with multiple answers
+import  py_utils_pkg.text_colours as TC #use instaed of print() for coloured text
+
 prt = TC.Tc()
 
 #code name - to be used in  warning/error msgs.
@@ -29,6 +27,7 @@ class Chat(Node):
 
     def __init__(self):
         super().__init__('my_node')
+        self.qa           = xmasqa.QandA()
         self.subscription = self.create_subscription(
             String, '/hearts/stt', self.listener_callback,  10)
 
@@ -37,12 +36,17 @@ class Chat(Node):
         return
 
     def listener_callback(self, msg):
-        self.speakout(msg.data)
+        txt = msg.data
+
+        # pass text to get an appropriate answer
+        anstxt = self.qa.process_answer(txt)
+        prt.info("Answer is: "+anstxt)
+        self.speakout(anstxt)
         return
 
     def speakout(self,text2speak):
         msg      = String()
-        msg.data ="You said "+ text2speak
+        msg.data = text2speak
         self.pub_text.publish(msg)
         return
 

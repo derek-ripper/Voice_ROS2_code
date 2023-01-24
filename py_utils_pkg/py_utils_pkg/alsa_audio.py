@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ################################################################################
-# Filename: alsa_diags.py
+# Filename: alsa_audio.py
 # Author  : Derek Ripper
 # Created : 05 Oct 2022
 # Purpose : Define a class to switch speakers/mic ON & OFF as needed
@@ -18,6 +18,7 @@ class Audio_control():
         self.notmuted  = 0 # not muted
         self.micoff    = 0 # mic off
         self.micon     = 1 # mic on
+        
         self.mic_on()      # ensure intial status of: mic "on" and speaker "off"
         
     def list_status(self):

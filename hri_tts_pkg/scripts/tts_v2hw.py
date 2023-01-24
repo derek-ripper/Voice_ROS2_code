@@ -24,17 +24,15 @@
 ################################################################################
 # import the required google module for "text to speech" conversion
 from gtts import gTTS
+
 import rclpy
 from   rclpy.node   import Node
 from   std_msgs.msg import String
 # import 
-import py_utils_pkg.alsa_audio as actrl    # alsa control for mic and speaker
-import py_utils_pkg.xmasqa     as xmasqa   # contans questions with multiple answers
-
+import py_utils_pkg.alsa_audio as actrl # alsa control for mic and speaker
 import os
-# simple routine to use instead of print() -
-# To get colour coded messages for ERROR,INFO,RESULT, etc
-import  py_utils_pkg.text_colours     as TC
+
+import  py_utils_pkg.text_colours as TC #use instaed of print() for coloured text
 prt = TC.Tc()
 
 cname = " tts_v2hw- "
@@ -42,7 +40,6 @@ class speak(Node):
     def __init__(self):
         super().__init__('tts_node')
         self.ac         = actrl.Audio_control()
-        self.qa         = xmasqa.QandA()
         self.language   = 'en'
         self.accent     = 'co.uk'
         self.slow       = 'False'
@@ -56,11 +53,9 @@ class speak(Node):
         #### Switch OFF microphone
         self.ac.mic_off()
         prt.info(cname+"Microphone is MUTED speaker ON!")
-        # pass text to get an appropriate answer
-        anstxt = self.qa.process_answer(txt)
-        prt.info("Answer is: "+anstxt)
+        prt.info("Text to say is: "+txt)
         # Create the mp3 file that is to be spoken
-        myobj=gTTS(text=anstxt, lang=self.language, tld=self.accent,slow=self.slow)
+        myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
 
         # NB arg value for file cannot be a variable name!
         myobj.save('TheTextToSay.mp3')
