@@ -24,6 +24,7 @@ ament_python_install_package(scripts)
 
 install(PROGRAMS
 scripts/chat.py
+scripts/xmasqa.py
 DESTINATION lib/${PROJECT_NAME}
 )
 

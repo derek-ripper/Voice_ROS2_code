@@ -18,8 +18,8 @@ def generate_launch_description():
         emulate_tty = True,
         parameters =[
         {"SR_SPEECH_ENGINE"    : "azure"},
-        {"SR_ENERGY_THRESHOLD" :  302   },
-        {"SR_PAUSE_THRESHOLD"  :  0.855 },
+        {"SR_ENERGY_THRESHOLD" :  308   },
+        {"SR_PAUSE_THRESHOLD"  :  0.85  },
         ]),
 
         Node(
