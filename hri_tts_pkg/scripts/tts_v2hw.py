@@ -51,7 +51,7 @@ class speak(Node):
     def listen_callback(self, msg):
         txt = msg.data
         #### Switch OFF microphone
-        self.ac.mic_off()
+        ### now done before leving stt_+v2.py -      self.ac.mic_off()
         prt.info(cname+"Microphone is MUTED speaker ON!")
         prt.info("Text to say is: "+txt)
         # Create the mp3 file that is to be spoken
