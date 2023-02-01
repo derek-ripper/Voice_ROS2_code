@@ -52,6 +52,9 @@ class SpeechRecognizer(Node):
     def __init__(self):
         super().__init__('SpeechRecognizer')
         self.ac         = actrl.Audio_control()
+        self.ac.mic_on()
+        self.ac.mixer_mic.setvolume(80) # percentage for voice capture
+        
         prt.info(cname+" init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
         self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default

@@ -40,7 +40,6 @@ class Chat(Node):
 
         # pass text to get an appropriate answer
         anstxt = self.qa.process_answer(txt)
-        prt.info("Answer is: "+anstxt)
         self.speakout(anstxt)
         return
 

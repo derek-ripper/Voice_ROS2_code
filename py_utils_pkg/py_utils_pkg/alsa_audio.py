@@ -72,7 +72,7 @@ class Audio_control():
 ##### end of class def for "Audio_control"
 
 def main(args=None):
-    d = audio_control()
+    d = Audio_control()
     d.mic_off()       ## mic     OFF, Speaker ON
     d.mic_on()        ## speaker OFF, mic  ON
     d.list_status()

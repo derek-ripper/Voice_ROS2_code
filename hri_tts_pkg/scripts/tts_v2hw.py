@@ -51,9 +51,9 @@ class speak(Node):
     def listen_callback(self, msg):
         txt = msg.data
         #### Switch OFF microphone
-        ### now done before leving stt_+v2.py -      self.ac.mic_off()
-        prt.info(cname+"Microphone is MUTED speaker ON!")
-        prt.info("Text to say is: "+txt)
+        ### now done before leving stt_v2.py -      self.ac.mic_off()
+
+        prt.result("Text to say is: "+txt)
         # Create the mp3 file that is to be spoken
         myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
 
@@ -69,7 +69,8 @@ class speak(Node):
         
         #### Switch microphone ON & speaker OFF
         self.ac.mic_on()
-
+        self.ac.mixer_mic.setvolume(80) # percentage for voice capture
+        
         return
 ##### end of class def for "speak"
 
