@@ -46,7 +46,7 @@ import py_utils_pkg.alsa_audio as actrl # alsa control for mic and speaker
 prt = TC.Tc()
 
 #code name - to be used in any warning/error msgs.
-cname = " stt_v2: "
+cname = "stt_v2: "
 class SpeechRecognizer(Node):
 
     def __init__(self):

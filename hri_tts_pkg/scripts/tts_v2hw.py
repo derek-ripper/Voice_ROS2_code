@@ -53,7 +53,7 @@ class speak(Node):
         #### Switch OFF microphone
         ### now done before leving stt_v2.py -      self.ac.mic_off()
 
-        prt.result("Respond with: "+txt)
+        prt.result("SPEAKING: "+txt)
         # Create the mp3 file that is to be spoken
         myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
 
