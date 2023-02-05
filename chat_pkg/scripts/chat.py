@@ -15,8 +15,8 @@ import rclpy
 from   rclpy.node    import Node
 from   std_msgs.msg  import String
 
-import py_utils_pkg.xmasqa    as xmasqa # contans questions with multiple answers
-import  py_utils_pkg.text_colours as TC #use instaed of print() for coloured text
+import xmasqa                    as xmasqa # contans questions with multiple answers
+import py_utils_pkg.text_colours as TC #use instaed of print() for coloured text
 
 prt = TC.Tc()
 

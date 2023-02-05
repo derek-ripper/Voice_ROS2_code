@@ -94,7 +94,6 @@ class QandA():
             
         else:
             #search for key words in stt argument
-            print("stt: ",stt)
             irow = -1
             for keyphrase in self.questions:
                 irow += 1

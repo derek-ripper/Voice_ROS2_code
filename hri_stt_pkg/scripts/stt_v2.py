@@ -111,7 +111,6 @@ class SpeechRecognizer(Node):
                 else:
                     msg.data  = self.recognize(audio)
                 
-                prt.info(cname + "SPEECH HEARD by ROBOT.")
                 prt.result(cname + "" + msg.data + "\n")
 
             except Exception as exc:
@@ -327,10 +326,8 @@ class SpeechRecognizer(Node):
 #
 def main(args=None):
     rclpy.init(args=args)
-    prt.info(cname + "********************** Starting  in main")
-
+   
     my_node = SpeechRecognizer()
-
  
     while rclpy.ok():
         my_node.jfdi()

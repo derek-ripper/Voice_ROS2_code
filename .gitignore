@@ -5,7 +5,11 @@ __pycache__/
 *.py~
 # C extensions
 *.so
-
+# for unwanted  'colcon build' directories
+install/
+log/
+build/
+*.mp3
 # Distribution / packaging
 .Python
 build/
