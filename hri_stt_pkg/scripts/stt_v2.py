@@ -52,13 +52,13 @@ class SpeechRecognizer(Node):
     def __init__(self):
         super().__init__('SpeechRecognizer')
         self.ac         = actrl.Audio_control()
-        self.ac.mic_on()
-        self.ac.mixer_mic.setvolume(80) # percentage for voice capture
+
         
         prt.info(cname+" init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
         self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
         self.declare_parameter("SR_PAUSE_THRESHOLD",  0.8    ) # pkg default
+        self.declare_parameter("SR_MIC_VOLUME",       55     ) # % for microphone volume
 
         self.publish_ = self.create_publisher(String, '/hearts/stt', 10)
     
@@ -73,8 +73,14 @@ class SpeechRecognizer(Node):
             'SR_SPEECH_ENGINE').get_parameter_value().string_value
         self.energy_threshold = self.get_parameter(
             'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
-        self.pause_threshold = self.get_parameter(
+        self.pause_threshold  = self.get_parameter(
             'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
+        self.mic_volume       = self.get_parameter(
+            'SR_MIC_VOLUME').get_parameter_value().integer_value 
+        self.ac.mic_on()
+        self.ac.mixer_mic.setvolume(self.mic_volume) # percentage for voice capture
+       
+            
         self.dynamic_energy_threshold  = False # default is "True"
 
         self.set_speech_recognition_engine(self.speech_recognition_engine)
@@ -92,7 +98,7 @@ class SpeechRecognizer(Node):
 
 
     def jfdi(self):
-
+            
             audio = self.get_audio_from_mic(self.energy_threshold, self.pause_threshold,
                     self.dynamic_energy_threshold)
 
@@ -107,7 +113,6 @@ class SpeechRecognizer(Node):
                     #hence only need the first item.
                     msg.data, confidence = msg.data.split(",")
                     msg.data = msg.data[1:]
-                    #msg.data = msg.data.replace("'","")
                 else:
                     msg.data  = self.recognize(audio)
                 
@@ -120,7 +125,7 @@ class SpeechRecognizer(Node):
             if not msg.data is None:
                 self.ac.mic_off()
                 self.publish_.publish(msg)
-
+ 
 
     def set_audio_source(self, audio_source):
         self.audio_source = audio_source

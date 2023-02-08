@@ -18,7 +18,8 @@ def generate_launch_description():
         parameters =[
         {"SR_SPEECH_ENGINE"    : "google"},
         {"SR_ENERGY_THRESHOLD" : 650     },
-        {"SR_PAUSE_THRESHOLD"  :   0.80   },
+        {"SR_PAUSE_THRESHOLD"  : 0.80    },
+        {"SR_MIC_VOLUME"       : 80      }, # % for microphone volume
         ])
     ])
     return ld
