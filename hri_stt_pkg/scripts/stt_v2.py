@@ -54,11 +54,11 @@ class SpeechRecognizer(Node):
         self.ac         = actrl.Audio_control()
 
         
-        prt.info(cname+" init section ===================")
+        prt.info(cname+"init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
         self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
         self.declare_parameter("SR_PAUSE_THRESHOLD",  0.8    ) # pkg default
-        self.declare_parameter("SR_MIC_VOLUME",       55     ) # % for microphone volume
+        self.declare_parameter("SR_MIC_VOLUME",       80     ) # % for microphone volume
 
         self.publish_ = self.create_publisher(String, '/hearts/stt', 10)
     
@@ -88,7 +88,9 @@ class SpeechRecognizer(Node):
 
         prt.info(cname + "speech_recognition_engine: " + self.speech_recognition_engine)
         prt.info(cname + "Energy threshold         : " + str(self.energy_threshold))
-        prt.info(cname + "Pause threshold          : " + str(self.pause_threshold))
+        prt.info(cname + "Pause threshold   (secs) : " + str(self.pause_threshold))
+        prt.info(cname + "Microphone volume (%)    : " + str(self.mic_volume))
+
         settings =  "SR/ET/PT: " + self.speech_recognition_engine + "/"+ \
                str(self.energy_threshold)+"/"+str(self.pause_threshold)
 
@@ -317,7 +319,10 @@ class SpeechRecognizer(Node):
             self.sp_rec.pause_threshold          = pause_threshold           # std package default is 0.8 secs
 
             prt.input(cname + "Robot waiting for voice input .....")
-
+            prt.debug(cname + "Microphone volume (%)    : " + str(self.mic_volume))
+            vols_list = self.ac.mixer_mic.getvolume()
+            prt.debug("Vols list: ")
+            print(vols_list)
             return self.sp_rec.listen(source)
 
 

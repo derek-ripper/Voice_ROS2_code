@@ -43,10 +43,13 @@ class speak(Node):
         self.language   = 'en'
         self.accent     = 'co.uk'
         self.slow       = 'False'
-
+        self.declare_parameter("SR_MIC_VOLUME",       80     ) # % for microphone volume
+        self.mic_volume       = self.get_parameter(
+            'SR_MIC_VOLUME').get_parameter_value().integer_value 
+            
         self.listen         = self.create_subscription(
             String,'/hearts/tts',self.listen_callback,10)
-
+        prt.debug(cname + "Microphone volume (%)    : " + str(self.mic_volume))
 
     def listen_callback(self, msg):
         txt = msg.data
@@ -68,9 +71,9 @@ class speak(Node):
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
         
         #### Switch microphone ON & speaker OFF
-        self.ac.mic_on()
-        self.ac.mixer_mic.setvolume(80) # percentage for voice capture
         
+        self.ac.mixer_mic.setvolume(self.mic_volume) # percentage for voice capture
+       
         return
 ##### end of class def for "speak"
 
