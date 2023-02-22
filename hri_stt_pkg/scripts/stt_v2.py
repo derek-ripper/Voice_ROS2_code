@@ -224,7 +224,18 @@ class SpeechRecognizer(Node):
         return
 
     def init_azure(self):
-        self.azure_key  = '8280075ae6ed4f7ba1b6a18d248a8f2d'
+
+        # read key from USB stick
+        key_path = '/media/derek/DAR_KEYS/MS_azure_key.txt'
+        try:
+            key_file = open(key_path, 'r')
+        except:
+            prt.error(cname+"Unable to access key file: "+key_path)
+            
+        self.azure_key  = key_file.readline()
+        self.azure_key = self.azure_key.rstrip('\n')
+        key_file.close() 
+        prt.debug(cname+"Azure Key: "+  self.azure_key )  
         return
 
     def recognize_google(self, audio):
@@ -238,7 +249,7 @@ class SpeechRecognizer(Node):
         # r.recognize_google(audio, key="API_KEY")`
         # instead of `r.recognize_google(audio)`
 
-        return self.sp_rec.recognize_google(audio, language="en-GB")#,key='AIzaSyAFaKnn1cMIrjGYOOdocHMDnVjInbOF_yo')
+        return self.sp_rec.recognize_google(audio, language="en-GB")# ,key='AIzaSyAFaKnn1cMIrjGYOOdocHMDnVjInbOF_yo')
 
     def recognize_ibm(self, audio):
         return self.sp_rec.recognize_ibm(audio, username=self.IBM_USERNAME,
@@ -248,11 +259,12 @@ class SpeechRecognizer(Node):
         return self.sp_rec.recognize_sphinx(audio)
 
     def recognize_google_cloud(self, audio):
-        prt.debug("ENV VALUE: "+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+        prt.debug("In google cloud ++++++++++===")
+        prt.debug("ENV VALUE: ")#+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
         return self.sp_rec.recognize_google_cloud(
             audio,
-            #credentials_json  = gcpc.gcp_credentials("Derek"),
-            credentials_json  = None,
+            credentials_json  = gcpc.gcp_credentials("Derek"),
+            #credentials_json  = None,
             language          ="en-GB",
             preferred_phrases = None) # self.gcp_kwords)
 
