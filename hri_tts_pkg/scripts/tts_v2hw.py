@@ -71,7 +71,7 @@ class speak(Node):
             prt.error(cname+"rtn code rc2 - rm  cmd: "+str(rc2))
         
         #### Switch microphone ON & speaker OFF
-        
+        self.ac.mic_on()
         self.ac.mixer_mic.setvolume(self.mic_volume) # percentage for voice capture
        
         return
