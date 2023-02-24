@@ -18,7 +18,7 @@ def generate_launch_description():
         output     ="screen",
         emulate_tty = True,
         parameters =[
-        {"SR_SPEECH_ENGINE"    : "azure"},
+        {"SR_SPEECH_ENGINE"    : "google"},
         {"SR_ENERGY_THRESHOLD" :  301   },
         {"SR_PAUSE_THRESHOLD"  :  0.81  },
         {"SR_MIC_VOLUME"       :  mic_vol    },
