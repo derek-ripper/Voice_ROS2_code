@@ -56,6 +56,7 @@ class SpeechRecognizer(Node):
         
         prt.info(cname+"init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
+        self.declare_parameter("SR_SPEECH_KEY", "File name for speech key NOT Set")
         self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
         self.declare_parameter("SR_PAUSE_THRESHOLD",  0.8    ) # pkg default
         self.declare_parameter("SR_MIC_VOLUME",       80     ) # % for microphone volume
@@ -71,6 +72,10 @@ class SpeechRecognizer(Node):
         
         self.speech_recognition_engine = self.get_parameter(
             'SR_SPEECH_ENGINE').get_parameter_value().string_value
+        self.speech_recognition_key = self.get_parameter(
+            'SR_SPEECH_KEY').get_parameter_value().string_value    
+            
+            
         self.energy_threshold = self.get_parameter(
             'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
         self.pause_threshold  = self.get_parameter(
@@ -263,7 +268,7 @@ class SpeechRecognizer(Node):
         prt.debug("ENV VALUE: ")#+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
         return self.sp_rec.recognize_google_cloud(
             audio,
-            credentials_json  = '/media/derek/DAR_KEYS/gcp-sr-86d1420e0e58.json',
+            credentials_json  = self.speech_recognition_key,
             language          ="en-GB",
             preferred_phrases = None) # self.gcp_kwords)
 
