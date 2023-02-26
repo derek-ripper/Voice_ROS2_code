@@ -41,20 +41,25 @@ import  py_utils_pkg.text_colours     as TC  # print text in various colours/sty
 #     The 2 sets ofcredentials in the code  are for Derek Ripper & Zeke Steer
 import gcp_keywords_r     as gcpk # GCP preferred keyword/sphrases
 import gcp_credentials_v2 as gcpc # GCP credentials to access GCP speech recognition
-
+import py_utils_pkg.alsa_audio as actrl # alsa control for mic and speaker
 # simple routine to use instead of print() - to get colour coded messages for ERROR,INFO,RESULT, etc
 prt = TC.Tc()
 
 #code name - to be used in any warning/error msgs.
-cname = " stt_v2: "
+cname = "stt_v2: "
 class SpeechRecognizer(Node):
 
     def __init__(self):
         super().__init__('SpeechRecognizer')
-        prt.info(cname+" init section ===================")
+        self.ac         = actrl.Audio_control()
+
+        
+        prt.info(cname+"init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
+        self.declare_parameter("SR_SPEECH_KEY", "File name for speech key NOT Set")
         self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
         self.declare_parameter("SR_PAUSE_THRESHOLD",  0.8    ) # pkg default
+        self.declare_parameter("SR_MIC_VOLUME",       80     ) # % for microphone volume
 
         self.publish_ = self.create_publisher(String, '/hearts/stt', 10)
     
@@ -67,10 +72,20 @@ class SpeechRecognizer(Node):
         
         self.speech_recognition_engine = self.get_parameter(
             'SR_SPEECH_ENGINE').get_parameter_value().string_value
+        self.speech_recognition_key = self.get_parameter(
+            'SR_SPEECH_KEY').get_parameter_value().string_value    
+            
+            
         self.energy_threshold = self.get_parameter(
             'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
-        self.pause_threshold = self.get_parameter(
+        self.pause_threshold  = self.get_parameter(
             'SR_PAUSE_THRESHOLD').get_parameter_value().double_value
+        self.mic_volume       = self.get_parameter(
+            'SR_MIC_VOLUME').get_parameter_value().integer_value 
+        self.ac.mic_on()
+        self.ac.mixer_mic.setvolume(self.mic_volume) # percentage for voice capture
+       
+            
         self.dynamic_energy_threshold  = False # default is "True"
 
         self.set_speech_recognition_engine(self.speech_recognition_engine)
@@ -78,7 +93,9 @@ class SpeechRecognizer(Node):
 
         prt.info(cname + "speech_recognition_engine: " + self.speech_recognition_engine)
         prt.info(cname + "Energy threshold         : " + str(self.energy_threshold))
-        prt.info(cname + "Pause threshold          : " + str(self.pause_threshold))
+        prt.info(cname + "Pause threshold   (secs) : " + str(self.pause_threshold))
+        prt.info(cname + "Microphone volume (%)    : " + str(self.mic_volume))
+
         settings =  "SR/ET/PT: " + self.speech_recognition_engine + "/"+ \
                str(self.energy_threshold)+"/"+str(self.pause_threshold)
 
@@ -88,7 +105,7 @@ class SpeechRecognizer(Node):
 
 
     def jfdi(self):
-
+            
             audio = self.get_audio_from_mic(self.energy_threshold, self.pause_threshold,
                     self.dynamic_energy_threshold)
 
@@ -103,11 +120,9 @@ class SpeechRecognizer(Node):
                     #hence only need the first item.
                     msg.data, confidence = msg.data.split(",")
                     msg.data = msg.data[1:]
-                    #msg.data = msg.data.replace("'","")
                 else:
                     msg.data  = self.recognize(audio)
                 
-                prt.info(cname + "SPEECH HEARD by ROBOT.")
                 prt.result(cname + "" + msg.data + "\n")
 
             except Exception as exc:
@@ -115,8 +130,9 @@ class SpeechRecognizer(Node):
                 prt.error(str(exc))
 
             if not msg.data is None:
+                self.ac.mic_off()
                 self.publish_.publish(msg)
-
+ 
 
     def set_audio_source(self, audio_source):
         self.audio_source = audio_source
@@ -213,7 +229,18 @@ class SpeechRecognizer(Node):
         return
 
     def init_azure(self):
-        self.azure_key  = '8280075ae6ed4f7ba1b6a18d248a8f2d'
+
+        # read key from USB stick
+        key_path = '/media/derek/DAR_KEYS/MS_azure_key.txt'
+        try:
+            key_file = open(key_path, 'r')
+        except:
+            prt.error(cname+"Unable to access key file: "+key_path)
+            
+        self.azure_key  = key_file.readline()
+        self.azure_key = self.azure_key.rstrip('\n')
+        key_file.close() 
+        prt.debug(cname+"Azure Key: "+  self.azure_key )  
         return
 
     def recognize_google(self, audio):
@@ -227,7 +254,7 @@ class SpeechRecognizer(Node):
         # r.recognize_google(audio, key="API_KEY")`
         # instead of `r.recognize_google(audio)`
 
-        return self.sp_rec.recognize_google(audio, language="en-GB")#,key='AIzaSyAFaKnn1cMIrjGYOOdocHMDnVjInbOF_yo')
+        return self.sp_rec.recognize_google(audio, language="en-GB")#,key='AIzaSyDZqYjuN5AUNupTM5IlG73QApJgvZl2Ev0')
 
     def recognize_ibm(self, audio):
         return self.sp_rec.recognize_ibm(audio, username=self.IBM_USERNAME,
@@ -237,11 +264,11 @@ class SpeechRecognizer(Node):
         return self.sp_rec.recognize_sphinx(audio)
 
     def recognize_google_cloud(self, audio):
-        prt.debug("ENV VALUE: "+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+        prt.debug("In google cloud ++++++++++===")
+        prt.debug("ENV VALUE: ")#+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
         return self.sp_rec.recognize_google_cloud(
             audio,
-            #credentials_json  = gcpc.gcp_credentials("Derek"),
-            credentials_json  = None,
+            credentials_json  = '/media/derek/DAR_KEYS/gcp-sr-86d1420e0e58.json',
             language          ="en-GB",
             preferred_phrases = None) # self.gcp_kwords)
 
@@ -308,7 +335,10 @@ class SpeechRecognizer(Node):
             self.sp_rec.pause_threshold          = pause_threshold           # std package default is 0.8 secs
 
             prt.input(cname + "Robot waiting for voice input .....")
-
+            prt.debug(cname + "Microphone volume (%)    : " + str(self.mic_volume))
+            vols_list = self.ac.mixer_mic.getvolume()
+            prt.debug("Vols list: ")
+            print(vols_list)
             return self.sp_rec.listen(source)
 
 
@@ -322,10 +352,8 @@ class SpeechRecognizer(Node):
 #
 def main(args=None):
     rclpy.init(args=args)
-    prt.info(cname + "********************** Starting  in main")
-
+   
     my_node = SpeechRecognizer()
-
  
     while rclpy.ok():
         my_node.jfdi()

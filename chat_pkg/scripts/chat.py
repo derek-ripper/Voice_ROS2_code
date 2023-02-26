@@ -15,7 +15,7 @@ import rclpy
 from   rclpy.node    import Node
 from   std_msgs.msg  import String
 
-import py_utils_pkg.xmasqa    as xmasqa # contans questions with multiple answers
+import xmasqa                    as xmasqa # contans questions with multiple answers
 import py_utils_pkg.text_colours as TC #use instaed of print() for coloured text
 
 prt = TC.Tc()
@@ -40,7 +40,6 @@ class Chat(Node):
 
         # pass text to get an appropriate answer
         anstxt = self.qa.process_answer(txt)
-        prt.info("Answer is: "+anstxt)
         self.speakout(anstxt)
         return
 

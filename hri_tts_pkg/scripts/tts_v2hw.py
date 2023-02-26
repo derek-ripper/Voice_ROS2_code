@@ -43,17 +43,20 @@ class speak(Node):
         self.language   = 'en'
         self.accent     = 'co.uk'
         self.slow       = 'False'
-
+        self.declare_parameter("SR_MIC_VOLUME",       80     ) # % for microphone volume
+        self.mic_volume       = self.get_parameter(
+            'SR_MIC_VOLUME').get_parameter_value().integer_value 
+            
         self.listen         = self.create_subscription(
             String,'/hearts/tts',self.listen_callback,10)
-
+        prt.debug(cname + "Microphone volume (%)    : " + str(self.mic_volume))
 
     def listen_callback(self, msg):
         txt = msg.data
         #### Switch OFF microphone
-        self.ac.mic_off()
-        prt.info(cname+"Microphone is MUTED speaker ON!")
-        prt.info("Text to say is: "+txt)
+        ### now done before leaving stt_v2.py -      self.ac.mic_off()
+
+        prt.result("SPEAKING: "+txt)
         # Create the mp3 file that is to be spoken
         myobj=gTTS(text=txt, lang=self.language, tld=self.accent,slow=self.slow)
 
@@ -69,7 +72,8 @@ class speak(Node):
         
         #### Switch microphone ON & speaker OFF
         self.ac.mic_on()
-
+        self.ac.mixer_mic.setvolume(self.mic_volume) # percentage for voice capture
+       
         return
 ##### end of class def for "speak"
 

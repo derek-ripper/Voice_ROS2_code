@@ -9,6 +9,7 @@ from launch_ros.actions import Node
 from launch.actions     import ExecuteProcess
 
 def generate_launch_description():
+    mic_vol = 81
     ld =  LaunchDescription ([
         Node(
         package    ="hri_stt_pkg",
@@ -17,9 +18,12 @@ def generate_launch_description():
         output     ="screen",
         emulate_tty = True,
         parameters =[
-        {"SR_SPEECH_ENGINE"    : "azure"},
-        {"SR_ENERGY_THRESHOLD" :  308   },
-        {"SR_PAUSE_THRESHOLD"  :  0.85  },
+        {"SR_SPEECH_ENGINE"    : "google"},
+        {"SR_SPEECH_KEY"       :                 \
+        '/media/derek/DAR_KEYS/gcp-sr-86d1420e0e58.json'},
+        {"SR_ENERGY_THRESHOLD" :  301   },
+        {"SR_PAUSE_THRESHOLD"  :  0.81  },
+        {"SR_MIC_VOLUME"       :  mic_vol    },
         ]),
 
         Node(
@@ -34,7 +38,10 @@ def generate_launch_description():
         executable ="tts_v2hw.py",
         name       ="tts_node", #Takes priorty over node name in package code
         output     ="screen",
-        emulate_tty = True),
+        emulate_tty = True,
+        parameters =[
+        {"SR_MIC_VOLUME"       :  mic_vol    },
+        ]),
 
         ])
     return ld
