@@ -254,7 +254,7 @@ class SpeechRecognizer(Node):
         # r.recognize_google(audio, key="API_KEY")`
         # instead of `r.recognize_google(audio)`
 
-        return self.sp_rec.recognize_google(audio, language="en-GB")# ,key='AIzaSyAFaKnn1cMIrjGYOOdocHMDnVjInbOF_yo')
+        return self.sp_rec.recognize_google(audio, language="en-GB")#,key='AIzaSyDZqYjuN5AUNupTM5IlG73QApJgvZl2Ev0')
 
     def recognize_ibm(self, audio):
         return self.sp_rec.recognize_ibm(audio, username=self.IBM_USERNAME,
