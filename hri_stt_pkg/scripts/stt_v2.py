@@ -268,7 +268,7 @@ class SpeechRecognizer(Node):
         prt.debug("ENV VALUE: ")#+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
         return self.sp_rec.recognize_google_cloud(
             audio,
-            credentials_json  = self.speech_recognition_key,
+            credentials_json  = '/media/derek/DAR_KEYS/gcp-sr-86d1420e0e58.json',
             language          ="en-GB",
             preferred_phrases = None) # self.gcp_kwords)
 
