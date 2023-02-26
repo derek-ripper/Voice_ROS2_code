@@ -96,8 +96,9 @@ class SpeechRecognizer(Node):
         prt.info(cname + "Pause threshold   (secs) : " + str(self.pause_threshold))
         prt.info(cname + "Microphone volume (%)    : " + str(self.mic_volume))
 
-        settings =  "SR/ET/PT: " + self.speech_recognition_engine + "/"+ \
-               str(self.energy_threshold)+"/"+str(self.pause_threshold)
+        self.settings =  "SR/ET/PT/MV: " + self.speech_recognition_engine+"/"   +\
+            str(self.energy_threshold)+"/"+str(self.pause_threshold)+" secs"+"/"+\
+            str(self.mic_volume)+" %"
 
         prt.info(cname + "audio source is microphone")
         self.set_audio_source("mic")
@@ -132,7 +133,6 @@ class SpeechRecognizer(Node):
             if not msg.data is None:
                 self.ac.mic_off()
                 self.publish_.publish(msg)
- 
 
     def set_audio_source(self, audio_source):
         self.audio_source = audio_source
@@ -264,7 +264,7 @@ class SpeechRecognizer(Node):
         return self.sp_rec.recognize_sphinx(audio)
 
     def recognize_google_cloud(self, audio):
-        prt.debug("In google cloud ++++++++++===")
+
         prt.debug("ENV VALUE: ")#+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
         return self.sp_rec.recognize_google_cloud(
             audio,
@@ -333,12 +333,10 @@ class SpeechRecognizer(Node):
             self.sp_rec.dynamic_energy_threshold = dynamic_energy_threshold  # std package default is "True"
             self.sp_rec.energy_threshold         = energy_threshold          # std package default is 300
             self.sp_rec.pause_threshold          = pause_threshold           # std package default is 0.8 secs
-
+            
+            prt.info(self.settings)
             prt.input(cname + "Robot waiting for voice input .....")
-            prt.debug(cname + "Microphone volume (%)    : " + str(self.mic_volume))
-            vols_list = self.ac.mixer_mic.getvolume()
-            prt.debug("Vols list: ")
-            print(vols_list)
+         
             return self.sp_rec.listen(source)
 
 

@@ -18,7 +18,7 @@ def generate_launch_description():
         output     ="screen",
         emulate_tty = True,
         parameters =[
-        {"SR_SPEECH_ENGINE"    : "google"},
+        {"SR_SPEECH_ENGINE"    : "google_cloud"},
         {"SR_SPEECH_KEY"       :                 \
         '/media/derek/DAR_KEYS/gcp-sr-86d1420e0e58.json'},
         {"SR_ENERGY_THRESHOLD" :  301   },
