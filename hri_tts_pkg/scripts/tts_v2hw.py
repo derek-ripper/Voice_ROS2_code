@@ -49,7 +49,6 @@ class speak(Node):
             
         self.listen         = self.create_subscription(
             String,'/hearts/tts',self.listen_callback,10)
-        prt.debug(cname + "Microphone volume (%)    : " + str(self.mic_volume))
 
     def listen_callback(self, msg):
         txt = msg.data

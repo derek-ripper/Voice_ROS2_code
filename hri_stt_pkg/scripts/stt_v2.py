@@ -40,7 +40,6 @@ import  py_utils_pkg.text_colours     as TC  # print text in various colours/sty
 # GCP needs an account with a "Payment Method!" currently there is not one.
 #     The 2 sets ofcredentials in the code  are for Derek Ripper & Zeke Steer
 import gcp_keywords_r     as gcpk # GCP preferred keyword/sphrases
-import gcp_credentials_v2 as gcpc # GCP credentials to access GCP speech recognition
 import py_utils_pkg.alsa_audio as actrl # alsa control for mic and speaker
 # simple routine to use instead of print() - to get colour coded messages for ERROR,INFO,RESULT, etc
 prt = TC.Tc()
@@ -56,7 +55,6 @@ class SpeechRecognizer(Node):
         
         prt.info(cname+"init section ===================")
         self.declare_parameter("SR_SPEECH_ENGINE",   'google')
-        self.declare_parameter("SR_SPEECH_KEY", "File name for speech key NOT Set")
         self.declare_parameter("SR_ENERGY_THRESHOLD", 300    ) # pkg default
         self.declare_parameter("SR_PAUSE_THRESHOLD",  0.8    ) # pkg default
         self.declare_parameter("SR_MIC_VOLUME",       80     ) # % for microphone volume
@@ -72,9 +70,6 @@ class SpeechRecognizer(Node):
         
         self.speech_recognition_engine = self.get_parameter(
             'SR_SPEECH_ENGINE').get_parameter_value().string_value
-        self.speech_recognition_key = self.get_parameter(
-            'SR_SPEECH_KEY').get_parameter_value().string_value    
-            
             
         self.energy_threshold = self.get_parameter(
             'SR_ENERGY_THRESHOLD').get_parameter_value().integer_value
@@ -231,16 +226,16 @@ class SpeechRecognizer(Node):
     def init_azure(self):
 
         # read key from USB stick
-        key_path = '/media/derek/DAR_KEYS/MS_azure_key.txt'
+        key_path=os.environ.get('AZURE_APPLICATION_CREDENTIALS')
+
         try:
             key_file = open(key_path, 'r')
         except:
             prt.error(cname+"Unable to access key file: "+key_path)
             
-        self.azure_key  = key_file.readline()
+        self.azure_key = key_file.readline()
         self.azure_key = self.azure_key.rstrip('\n')
-        key_file.close() 
-        prt.debug(cname+"Azure Key: "+  self.azure_key )  
+        key_file.close()  
         return
 
     def recognize_google(self, audio):
@@ -265,10 +260,9 @@ class SpeechRecognizer(Node):
 
     def recognize_google_cloud(self, audio):
 
-        prt.debug("ENV VALUE: ")#+os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
         return self.sp_rec.recognize_google_cloud(
             audio,
-            credentials_json  = '/media/derek/DAR_KEYS/gcp-sr-86d1420e0e58.json',
+            credentials_json  = None, #NB json file pick up from ENV setting
             language          ="en-GB",
             preferred_phrases = None) # self.gcp_kwords)
 
